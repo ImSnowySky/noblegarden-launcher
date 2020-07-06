@@ -2,7 +2,7 @@ import React from 'react';
 import * as Elements from './elements';
 
 const StartButton = ({ active, withoutUpdate = true, onClick = () => { } }) =>
-  <Elements.Container active = {active} onClick = {onClick}>
+  <Elements.Container active = {active} isHighlighted = {!withoutUpdate} onClick = {onClick}>
     {
       active
         ? 

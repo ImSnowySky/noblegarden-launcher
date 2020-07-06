@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Button } from '../../elements';
 import getColor, { COLORS } from 'front/features/shared/colors';
 
@@ -14,4 +14,9 @@ export const Container = styled(Button)`
   }
 
   img { width: 60px }
+
+  ${props => props.isUpdated && css`
+    background-color: gray;
+    pointer-events: none;
+  `};
 `;

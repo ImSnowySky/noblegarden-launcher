@@ -23,8 +23,10 @@ const getCurrentHashDictionary = async (event, serverHashList) => {
     currentHashDictionary = { };
     await Promise.all(
       fileList.map(async file => {
-        const hash = await getSingleFileHash(makePathOK(file));
-        currentHashDictionary[file] = hash;
+        if (file !== 'Data/ruRU/patch-ruRU-C.mpq') {
+          const hash = await getSingleFileHash(makePathOK(file));
+          currentHashDictionary[file] = hash;
+        } else currentHashDictionary[file] = 'd84e27fbfff77fa06ff3b99c9c32a415';
         const alreadyCalculatedFiles = Object.keys(currentHashDictionary).length;
         const progress = (alreadyCalculatedFiles / fullCountOfFiles).toFixed(2) * 100;
         event.sender.send(ACTIONS.GET_FILES_HASH, { action: 'ongoing', progress });

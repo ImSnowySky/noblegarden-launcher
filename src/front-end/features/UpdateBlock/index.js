@@ -111,7 +111,7 @@ class UpdateBlock extends React.Component {
         <ProgressBar progress = {progress} action = {actionName}/>
         <Elements.ButtonsContainer>
           <StartButton active = {!isOnUpdate} withoutUpdate = {actionName !== 'Обновлено'} onClick = {() => Dispatcher.dispatch(ACTIONS.START_EXE)} />
-          <UpdateButton loading = {isOnUpdate} onClick = {() => Dispatcher.dispatch(ACTIONS.GET_SERVER_HASHLIST)}/>
+          <UpdateButton loading = {isOnUpdate} isUpdated = {actionName === 'Обновлено'} onClick = {() => Dispatcher.dispatch(ACTIONS.GET_SERVER_HASHLIST)}/>
         </Elements.ButtonsContainer>
       </Elements.Wrapper>
     )

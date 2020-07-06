@@ -15,11 +15,19 @@ export const Container = styled(Button)`
     &:hover {
       background-color: ${getColor(COLORS.HEADER, 100)};
     }
-  `}
+  `};
 
   ${props => !props.active && css`
     pointer-events: none;
     background-color: gray;
     box-shadow: none;
+  `};
+
+  ${props => props.isHighlighted && css`
+    background-color: rgb(60, 170, 40);
+
+    &:hover {
+      background-color: rgb(80, 190, 60);
+    }
   `};
 `;
