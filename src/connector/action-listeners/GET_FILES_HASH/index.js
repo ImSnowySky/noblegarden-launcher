@@ -1,5 +1,6 @@
 const ACTIONS = require('../../actions');
 const md5File = require('md5-file');
+const makePathOK = require('../../../back-end/makePathOK');
 
 const getSingleFileHash = async pathToFile => {
   try {
@@ -22,7 +23,7 @@ const getCurrentHashDictionary = async (event, serverHashList) => {
     currentHashDictionary = { };
     await Promise.all(
       fileList.map(async file => {
-        const hash = await getSingleFileHash(file);
+        const hash = await getSingleFileHash(makePathOK(file));
         currentHashDictionary[file] = hash;
         const alreadyCalculatedFiles = Object.keys(currentHashDictionary).length;
         const progress = (alreadyCalculatedFiles / fullCountOfFiles).toFixed(2) * 100;

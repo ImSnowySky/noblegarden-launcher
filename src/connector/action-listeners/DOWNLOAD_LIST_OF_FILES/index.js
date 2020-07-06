@@ -1,13 +1,14 @@
 const ACTIONS = require('../../actions');
 const axios = require('axios');
 const fs = require('fs');
+const makePathOK = require('../../../back-end/makePathOK');
 
-const downloadSingleFile = async (fileName, filePath) => {
-  const writeStream = fs.createWriteStream(`${fileName}.lock`);
+const downloadSingleFile = async (pathToFile, pathOnServer) => {
+  const writeStream = fs.createWriteStream(`${pathToFile}.lock`);
 
   const response = await axios({
     method: 'get',
-    url: filePath,
+    url: pathOnServer,
     responseType: 'stream',
   });
 
@@ -27,18 +28,18 @@ const downloadSingleFile = async (fileName, filePath) => {
   });
 }
 
-const deleteOldFile = fileName => new Promise(
+const deleteOldFile = pathToFile => new Promise(
   (resolve, reject) => {
-    fs.unlink(fileName, err => {
+    fs.unlink(pathToFile, err => {
       if (err) reject (err);
       resolve(true);
     })
   }
 );
 
-const makeNewFileNameCorrect = fileName => new Promise(
+const makeNewFileNameCorrect = pathToFile => new Promise(
   (resolve, reject) => {
-    fs.rename(`${fileName}.lock`, `${fileName}`, err => {
+    fs.rename(`${pathToFile}.lock`, `${pathToFile}`, err => {
       if (err) reject(err);
       resolve(true);
     })
@@ -50,12 +51,13 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
   const sizeOfList = listOfFiles.length;
   let count = 0;
 
-  await Promise.all([
+  await Promise.all(
     listOfFiles.map(async fileName => {
+      const pathToFile = makePathOK(fileName);
       try {
-        await downloadSingleFile(fileName, serverMeta[fileName].path);
-        await deleteOldFile(fileName);
-        await makeNewFileNameCorrect(fileName);
+        await downloadSingleFile(pathToFile, serverMeta[fileName].path);
+        await deleteOldFile(pathToFile);
+        await makeNewFileNameCorrect(pathToFile);
 
         count += 1;
         event.sender.send(
@@ -66,10 +68,10 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
           }
         );
       } catch (e) {
-        console.log(`Error in ${fileName}: ${e}`);
+        console.log(`Error in ${pathToFile}: ${e}`);
       }
     })
-  ])
+  );
 
   event.sender.send(
     ACTIONS.DOWNLOAD_LIST_OF_FILES,
