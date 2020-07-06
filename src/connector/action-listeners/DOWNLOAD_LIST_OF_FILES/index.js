@@ -56,7 +56,9 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
       const pathToFile = makePathOK(fileName);
       try {
         await downloadSingleFile(pathToFile, serverMeta[fileName].path);
-        await deleteOldFile(pathToFile);
+        if (fs.existsSync(pathToFile)) {
+          await deleteOldFile(pathToFile);
+        }
         await makeNewFileNameCorrect(pathToFile);
 
         count += 1;

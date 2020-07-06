@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow } = require('electron');
 
 let win = null;
 
@@ -23,7 +23,7 @@ const getCurrentWindow = () => {
     });
 
     win.on('closed', function () {
-      if (process.platform !== 'darwin') app.quit()
+      if (process.platform !== 'darwin') app.quit();
       win = null
     });
   }

@@ -4,7 +4,7 @@ import News from './components/News';
 import Preloader from 'front/features/shared/Preloader';
 
 const NewsCard = ({ loading, data }) => <Elements.Container>
-  <Elements.Title>Последние новости</Elements.Title>
+  <Elements.Title>Лента новостей</Elements.Title>
   <Elements.Content>
     {
       loading
