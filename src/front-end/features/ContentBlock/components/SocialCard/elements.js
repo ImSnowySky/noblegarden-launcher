@@ -61,7 +61,7 @@ const Block = styled.div`
 export const Discord = styled(Block)`
   margin-right: 8px;
 
-  ${props => props.loading && css`
+  ${props => props.isLoading && css`
     background-color: #6c71b4;
     pointer-events: none;
   `}
@@ -79,7 +79,7 @@ export const Discord = styled(Block)`
 export const VK = styled(Block)`
   margin-left: 8px;
 
-  ${props => props.loading && css`
+  ${props => props.isLoading && css`
     background-color: #254e79;
     pointer-events: none;
   `}

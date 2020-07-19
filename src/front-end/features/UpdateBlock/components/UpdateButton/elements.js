@@ -7,7 +7,7 @@ export const Container = styled(Button)`
   color: ${getColor(COLORS.WHITE, 100)};
   margin-left: 8px;
 
-  pointer-events: ${props => props.loading ? 'none' : null};
+  pointer-events: ${props => props.isLoading ? 'none' : null};
 
   &:hover {
     background-color: ${getColor(COLORS.LINK, 100)};

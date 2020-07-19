@@ -7,7 +7,7 @@ import Preloader from 'front/features/shared/Preloader';
 const clickOnLink = link => Dispatcher.dispatch(ACTIONS.OPEN_LINK, link);
 
 const Social = ({ vk = { }, discord = { } }) => <Elements.Container>
-  <Elements.Discord loading = {discord.loading} onClick = {() => clickOnLink(discord.link || '#')}>
+  <Elements.Discord isLoading = {discord.loading} onClick = {() => clickOnLink(discord.link || '#')}>
   {
     discord.loading
       ? <Preloader />
@@ -21,7 +21,7 @@ const Social = ({ vk = { }, discord = { } }) => <Elements.Container>
         </>
   }
   </Elements.Discord>
-  <Elements.VK loading = {vk.loading} onClick = {() => clickOnLink(vk.link || '#')}>
+  <Elements.VK isLoading = {vk.loading} onClick = {() => clickOnLink(vk.link || '#')}>
   {
     vk.loading
       ? <Preloader />
