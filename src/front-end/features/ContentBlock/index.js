@@ -9,22 +9,43 @@ import Squares from './components/Squares';
 
 class ContentBlock extends React.Component {
   state = {
-    online: {
-      loading: true,
-      count: null,
-    },
-    news: {
-      loading: true,
-      data: null,
-    }
+    vk: { loading: true, link: null },
+    discord: { loading: true, link: null },
+    discord: { loading: true, link: null },
+    online: { loading: true, count: null },
+    news: { loading: true, data: null },
   };
 
   componentDidMount() {
     Dispatcher.on(ACTIONS.GET_ONLINE_COUNT, (_, payload) => this.onOnlineCountGet(payload));
     Dispatcher.on(ACTIONS.GET_LAST_NEWS, (_, payload) => this.onNewsGet(payload));
+    Dispatcher.on(ACTIONS.GET_VK_LINK, (_, payload) => this.onVKLinkGet(payload));
+    Dispatcher.on(ACTIONS.GET_DISCORD_LINK, (_, payload) => this.onDiscordLinkGet(payload));
     Dispatcher.dispatch(ACTIONS.GET_ONLINE_COUNT);
     Dispatcher.dispatch(ACTIONS.GET_LAST_NEWS);
+    Dispatcher.dispatch(ACTIONS.GET_VK_LINK);
+    Dispatcher.dispatch(ACTIONS.GET_DISCORD_LINK);
   }
+
+  onVKLinkGet = payload => {
+    const { action, result } = payload;
+    this.setState({ 
+      vk: {
+        loading: action === 'started',
+        link: result,
+      },
+    });
+  };
+
+  onDiscordLinkGet = payload => {
+    const { action, result } = payload;
+    this.setState({ 
+      discord: {
+        loading: action === 'started',
+        link: result,
+      },
+    });
+  };
 
   onOnlineCountGet = payload => {
     const { action, result } = payload;
@@ -56,7 +77,7 @@ class ContentBlock extends React.Component {
           <News loading = {isNewsLoading} data = {newsData} />
         </Elements.NewsCardContainer>
         <Elements.OtherCardsContainer>
-          <Social />
+          <Social vk = {this.state.vk} discord = {this.state.discord} />
           <Online loading = {isOnlineLoading} online = {onlineCount} />
           <Squares />
         </Elements.OtherCardsContainer>

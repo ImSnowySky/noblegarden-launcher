@@ -8,7 +8,7 @@ const StartButton = ({ active, withoutUpdate = true, onClick = () => { } }) =>
         ? 
           withoutUpdate
             ? <span>Начать<br />без обновления</span>
-            : <span>Начать</span>
+            : <span>Играть</span>
         : <span>Идёт<br />обновление</span>
     }
     

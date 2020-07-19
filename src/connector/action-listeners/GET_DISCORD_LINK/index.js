@@ -1,0 +1,15 @@
+const ACTIONS = require('../../actions');
+const axios = require('axios');
+
+const getDiscordLink = async event => {
+  event.sender.send(ACTIONS.GET_DISCORD_LINK, { action: 'started' });
+  try {
+    const response = await axios.get('http://noblegarden.net/site/discord-link');
+    event.sender.send(ACTIONS.GET_DISCORD_LINK, { action: 'finished', result: response.data });
+    return response.data;
+  } catch (e) {
+    return null;
+  }
+}
+
+module.exports = getDiscordLink;

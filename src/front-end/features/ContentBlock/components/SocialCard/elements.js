@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import getColor, { COLORS } from 'front/features/shared/colors';
 import disIMG from 'assets/social/discord.svg';
 import vkIMG from 'assets/social/vk.svg';
@@ -61,6 +61,11 @@ const Block = styled.div`
 export const Discord = styled(Block)`
   margin-right: 8px;
 
+  ${props => props.loading && css`
+    background-color: #6c71b4;
+    pointer-events: none;
+  `}
+
   ${DefaultLayer} {
     background-color: #6c71b4;
   }
@@ -73,6 +78,11 @@ export const Discord = styled(Block)`
 
 export const VK = styled(Block)`
   margin-left: 8px;
+
+  ${props => props.loading && css`
+    background-color: #254e79;
+    pointer-events: none;
+  `}
 
   ${DefaultLayer} {
     background-color: #254e79;

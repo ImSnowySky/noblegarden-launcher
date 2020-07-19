@@ -1,6 +1,8 @@
 module.exports = {
   CLOSE_LAUNCHER: 'close-launcher',
   OPEN_LINK: 'open-link',
+  GET_VK_LINK: 'get-vk-link',
+  GET_DISCORD_LINK: 'get-discord-link',
   GET_SERVER_HASHLIST: 'get-server-hashlist',
   GET_FILES_HASH: 'get-files-hash',
   GET_LIST_OF_CHANGED_FILES: 'get-list-of-changed-files',
