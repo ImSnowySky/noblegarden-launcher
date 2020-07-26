@@ -7,7 +7,8 @@ const getServerHashDictionary = async event => {
   event.sender.send(ACTIONS.GET_SERVER_HASHLIST, { action: 'started' });
 
   if (!currentServerDictionary) {
-    const serverJSON = await axios.get('http://144.76.153.163/patches.json', {
+    const serverAddress = await axios.get('http://noblegarden.net/site/patches-ip').then(res => res.data);
+    const serverJSON = await axios.get(`http://${serverAddress}/patches.json`, {
       onUploadProgress: progressEvent => {
         progressEvent.lengthComputable && event.sender.send(
           ACTIONS.GET_SERVER_HASHLIST,
