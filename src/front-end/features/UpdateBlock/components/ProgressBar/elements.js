@@ -25,7 +25,7 @@ export const Progress = styled.div`
   height: 100%;
   background: ${getColor(COLORS.LINK, 100)};
 
-  transition: width 125ms ease-in-out;
+  transition: width 2s linear;
 `;
 
 export const LoadingInfo = styled.div`
