@@ -3,6 +3,8 @@ const connect = require('../src/connector/connect')
 const ACTION_LISTENERS = require('../src/connector/action-listeners');
 const getCurrentWindow = require('../src/back-end/getCurrentWindow');
 
+app.disableHardwareAcceleration()
+
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
