@@ -6,6 +6,7 @@ import Header from 'front/features/Header';
 import ContentBlock from 'front/features/ContentBlock';
 import UpdateBlock from 'front/features/UpdateBlock';
 import Preloader from '../shared/Preloader/index';
+import ErrorBlock from '../ErrorBlock';
 
 class Main extends React.Component {
   state = {
@@ -27,18 +28,24 @@ class Main extends React.Component {
   }
 
   render() {
-    const { loading = false } = this.state;
+    const { loading = false, isVersionOK = false } = this.state;
     return (
       <Elements.Container withImage = {!loading}>
         {
           loading
             ? <Preloader />
-            : <>
-                <Elements.Gradient />
-                <Header />
-                <ContentBlock />
-                <UpdateBlock />
-              </>
+            : isVersionOK !== 'not-working' && isVersionOK
+              ? <>
+                  <Elements.Gradient />
+                  <Header />
+                  <ContentBlock />
+                  <UpdateBlock />
+                </>
+              : <>
+                  <Elements.Gradient />
+                  <Header />
+                  <ErrorBlock errorType = {isVersionOK === 'not-working' ? 'not-working' : 'not-last-version'} />
+                </>
         }
       </Elements.Container>
     )

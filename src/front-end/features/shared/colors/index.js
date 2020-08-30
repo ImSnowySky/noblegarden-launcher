@@ -4,6 +4,7 @@ export const COLORS = {
   TEXT: 'text',
   WHITE: 'white',
   BLACK: 'black',
+  ERROR: 'error',
   LINK: 'link',
 }
 
@@ -14,6 +15,7 @@ const colors = {
   [COLORS.WHITE]: '250,250,250',
   [COLORS.BLACK]: '5,5,5',
   [COLORS.LINK]: '3,128,206',
+  [COLORS.ERROR]: '150, 0, 30',
 };
 
 const getColor = (name, transparency = 100, add = 0) => {
