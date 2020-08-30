@@ -1,4 +1,4 @@
-const ACTIONS = require('../actions');
+const ACTIONS = require('../../connector/actions');
 const CLOSE_LAUNCHER = require('./CLOSE_LAUNCHER');
 const OPEN_LINK = require('./OPEN_LINK');
 const GET_FILES_HASH = require('./GET_FILES_HASH');
@@ -10,8 +10,10 @@ const GET_LAST_NEWS = require('./GET_LAST_NEWS');
 const START_EXE = require('./START_EXE');
 const GET_VK_LINK = require('./GET_VK_LINK');
 const GET_DISCORD_LINK = require('./GET_DISCORD_LINK');
+const CHECK_LAUNHCER_VERSION = require('./CHECK_LAUNCHER_VERSION');
 
 module.exports = {
+  [ACTIONS.CHECK_LAUNCHER_VERSION]: CHECK_LAUNHCER_VERSION,
   [ACTIONS.CLOSE_LAUNCHER]: CLOSE_LAUNCHER,
   [ACTIONS.OPEN_LINK]: OPEN_LINK,
   [ACTIONS.GET_FILES_HASH]: GET_FILES_HASH,

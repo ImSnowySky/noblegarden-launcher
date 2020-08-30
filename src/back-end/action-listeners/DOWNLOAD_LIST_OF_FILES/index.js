@@ -1,7 +1,7 @@
-const ACTIONS = require('../../actions');
+const ACTIONS = require('../../../connector/actions');
 const axios = require('axios');
 const fs = require('fs');
-const makePathOK = require('../../../back-end/makePathOK');
+const makePathOK = require('../../makePathOK');
 
 const downloadSingleFile = async ({ pathToFile, pathOnServer, onFileSizeKnown = () => null, onFileProgress = () => null }) => {
   let file = {

@@ -1,6 +1,6 @@
-const ACTIONS = require('../../actions');
+const ACTIONS = require('../../../connector/actions');
 const md5File = require('md5-file');
-const makePathOK = require('../../../back-end/makePathOK');
+const makePathOK = require('../../makePathOK');
 
 const getSingleFileHash = async pathToFile => {
   try {

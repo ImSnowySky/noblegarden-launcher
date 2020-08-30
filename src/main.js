@@ -1,6 +1,6 @@
 const { app, ipcMain } = require('electron')
 const connect = require('../src/connector/connect')
-const ACTION_LISTENERS = require('../src/connector/action-listeners');
+const ACTION_LISTENERS = require('../src/back-end/action-listeners');
 const getCurrentWindow = require('../src/back-end/getCurrentWindow');
 
 app.disableHardwareAcceleration()

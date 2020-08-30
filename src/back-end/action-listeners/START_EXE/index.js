@@ -1,6 +1,6 @@
 const run = require('child_process').spawn;
 const { app } = require('electron');
-const makePathOK = require('../../../back-end/makePathOK');
+const makePathOK = require('../../makePathOK');
 
 module.exports = async () => {
   run(makePathOK('Wow.exe'), [], { detached: true });

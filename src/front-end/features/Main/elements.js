@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import backrgoundIMG from 'assets/main/bg.png';
 import getColor, { COLORS } from 'front/features/shared/colors';
 
@@ -24,12 +24,10 @@ export const Container = styled.div`
   display: flex;
   width: 100%;
   height: 100%;
-  background: ${getColor(COLORS.WHITE, 100)};
   overflow: hidden;
   border: 4px solid ${getColor(COLORS.MAIN, 100)};
   border-top: 0;
   box-sizing: border-box;
-  background-image: url(${backrgoundIMG});
   background-size: 2480px;
   background-repeat: no-repeat;
   background-position: 0 0;
@@ -38,6 +36,15 @@ export const Container = styled.div`
   top: 0;
   left: 0;
   animation: ${backgroundAnim} 60s  ease-in-out infinite;
+
+  ${props => props.withImage && css`
+    background: ${getColor(COLORS.WHITE, 100)};
+    background-image: url(${backrgoundIMG});
+  `}
+
+  ${props => !props.withImage && css`
+    background: ${getColor(COLORS.MAIN, 100)};
+  `};
 `;
 
 export const Gradient = styled.div`

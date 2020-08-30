@@ -1,4 +1,4 @@
-const ACTIONS = require('../../actions');
+const ACTIONS = require('../../../connector/actions');
 const axios = require('axios');
 
 const getOnlineCount = async event => {

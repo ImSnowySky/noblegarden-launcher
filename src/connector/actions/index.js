@@ -1,4 +1,5 @@
 module.exports = {
+  CHECK_LAUNCHER_VERSION: 'check-launcher-version',
   CLOSE_LAUNCHER: 'close-launcher',
   OPEN_LINK: 'open-link',
   GET_VK_LINK: 'get-vk-link',

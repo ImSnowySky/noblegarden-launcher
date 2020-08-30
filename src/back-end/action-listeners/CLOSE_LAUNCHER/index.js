@@ -1,4 +1,4 @@
-const getCurrentWindow = require('../../../back-end/getCurrentWindow');
+const getCurrentWindow = require('../../getCurrentWindow');
 
 module.exports = () => {
   const window = getCurrentWindow();
