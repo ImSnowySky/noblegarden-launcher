@@ -56,3 +56,14 @@ export const Gradient = styled.div`
   height: 100%;
   pointer-events: none;
 `;
+
+export const Version = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: ${getColor(COLORS.WHITE, 100)};
+  font-family: 'Rubik', 'sans-serif';
+  font-size: 12px;
+  line-height: 14px;
+  text-align: right;
+`;

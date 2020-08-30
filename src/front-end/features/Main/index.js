@@ -34,18 +34,21 @@ class Main extends React.Component {
         {
           loading
             ? <Preloader />
-            : isVersionOK !== 'not-working' && isVersionOK
-              ? <>
-                  <Elements.Gradient />
-                  <Header />
-                  <ContentBlock />
-                  <UpdateBlock />
-                </>
-              : <>
-                  <Elements.Gradient />
-                  <Header />
-                  <ErrorBlock errorType = {isVersionOK === 'not-working' ? 'not-working' : 'not-last-version'} />
-                </>
+            : <>
+                <Elements.Gradient />
+                <Header />
+                {
+                  isVersionOK !== 'not-working' && isVersionOK
+                    ? <>
+                        <ContentBlock />
+                        <UpdateBlock />
+                      </>
+                    : <ErrorBlock
+                        errorType = {isVersionOK === 'not-working' ? 'not-working' : 'not-last-version'}
+                      />
+                }
+                <Elements.Version>v1.1.0</Elements.Version>
+              </>
         }
       </Elements.Container>
     )

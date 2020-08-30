@@ -8,7 +8,7 @@ const getLauncherVersion = async event => {
     event.sender.send(ACTIONS.CHECK_LAUNCHER_VERSION, { action: 'finished', result: response.data });
     return response.data;
   } catch (e) {
-    event.sender.send(ACTIONS.CHECK_LAUNCHER_VERSION, { action: 'finished', result: 'not-working' });
+    event.sender.send(ACTIONS.CHECK_LAUNCHER_VERSION, { action: 'finished', result: true });
   }
 }
 
