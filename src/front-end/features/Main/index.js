@@ -35,7 +35,7 @@ class Main extends React.Component {
             ? <Preloader />
             : <>
                 <Elements.Gradient />
-                <Header>123</Header>
+                <Header />
                 <ContentBlock />
                 <UpdateBlock />
               </>
