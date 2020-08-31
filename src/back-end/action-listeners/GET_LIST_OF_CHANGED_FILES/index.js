@@ -9,7 +9,7 @@ const getListOfChangedFiles = async (event, lists) => {
   const listOfChangedFiles = Object.keys(serverList).map(fileName => {
     const serverPathInfo = serverList[fileName];
     const clientHash = clientList[fileName];
-    if (serverPathInfo.hash !== clientHash) {
+    if (serverPathInfo['crc32-hash'] !== clientHash) {
       count++;
       event.sender.send(
         ACTIONS.GET_LIST_OF_CHANGED_FILES,
@@ -21,6 +21,10 @@ const getListOfChangedFiles = async (event, lists) => {
       return fileName;
     }
   }).filter(name => name);
+
+  listOfChangedFiles.forEach(fileName => {
+    console.log(`${fileName}: ${clientList[fileName]}`);
+  })
 
   event.sender.send(
     ACTIONS.GET_LIST_OF_CHANGED_FILES,

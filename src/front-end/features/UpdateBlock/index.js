@@ -38,6 +38,7 @@ class UpdateBlock extends React.Component {
     isOnUpdate: false,
     actionName: null,
     progress: 0,
+    absoluteProgress: null,
   };
 
   onGetServerHashlist = payload => {
@@ -55,10 +56,11 @@ class UpdateBlock extends React.Component {
   }
 
   onGetFilesHash = payload => {
-    const { action, progress, result = null } = payload;
+    const { action, progress, absoluteProgress = null, result = null } = payload;
     this.setState({
       actionName: TEXT_FOR_ACTION_STEPS.GET_FILES_HASH[action || 'finished'],
       progress,
+      absoluteProgress,
     }, () => {
       if (action === 'finished') {
         this.hashList = result;
@@ -75,7 +77,7 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.changeList = result;
-        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
+        //Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
       }
     });
   }
@@ -104,11 +106,11 @@ class UpdateBlock extends React.Component {
   }
 
   render() {
-    const { isOnUpdate, actionName, progress } = this.state;
+    const { isOnUpdate, actionName, progress, absoluteProgress } = this.state;
 
     return (
       <Elements.Wrapper>
-        <ProgressBar progress = {progress} action = {actionName}/>
+        <ProgressBar progress = {progress} action = {actionName} absoluteProgress = {absoluteProgress} />
         <Elements.ButtonsContainer>
           <StartButton active = {!isOnUpdate} withoutUpdate = {actionName !== 'Обновлено'} onClick = {() => Dispatcher.dispatch(ACTIONS.START_EXE)} />
           <UpdateButton isLoading = {isOnUpdate} isUpdated = {actionName === 'Обновлено'} onClick = {() => Dispatcher.dispatch(ACTIONS.GET_SERVER_HASHLIST)}/>

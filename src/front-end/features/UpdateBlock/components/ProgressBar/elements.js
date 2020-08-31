@@ -25,12 +25,23 @@ export const Progress = styled.div`
   height: 100%;
   background: ${getColor(COLORS.LINK, 100)};
 
-  transition: width 2s linear;
+  transition: width 125ms linear;
 `;
 
 export const LoadingInfo = styled.div`
   margin-top: 8px;
   width: 100%;
+  color: ${getColor(COLORS.WHITE, 100)};
+  font-size: 12px;
+  line-height: 16px;
+  font-family: 'Rubik', sans-serif;
+`;
+
+export const ProgressInAbs = styled.div`
+  position: absolute;
+  top: 32px;
+  right: 0;
+  text-align: right;
   color: ${getColor(COLORS.WHITE, 100)};
   font-size: 12px;
   line-height: 16px;
