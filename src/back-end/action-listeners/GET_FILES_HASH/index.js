@@ -3,11 +3,11 @@ const ACTIONS = require('../../../connector/actions');
 const { crc32 } = require('crc');
 const makePathOK = require('../../makePathOK');
 
-const readFileAsync = (
+const readFileAsync = ({
   pathToFile,
-  onFileSizeGetted = () => 0,
+  onFileSizeKnown = () => 0,
   onProgressChanged = () => 0,
-) => new Promise(resolve => {
+}) => new Promise(resolve => {
   const chunks = [];
   let readedSize = 0;
   const stream = fs.createReadStream(pathToFile);
@@ -17,11 +17,20 @@ const readFileAsync = (
     onProgressChanged(readedSize);
   }, 500);
 
-  onFileSizeGetted(fileSize);
+  onFileSizeKnown(fileSize);
   stream.on('data', chunk => {
     readedSize += chunk.length;
     chunks.push(chunk);
   });
+  stream.on('error', () => {
+    try {
+      clearInterval(progressChangedCheckInterval);
+      onProgressChanged(0);
+      stream.destroy();
+    } catch(e) {
+      return null;
+    }
+  })
   stream.on('end', () => {
     try {
       clearInterval(progressChangedCheckInterval);
@@ -34,9 +43,9 @@ const readFileAsync = (
   });
 })
 
-const getSingleFileHash = async (pathToFile, onFileSizeGetted, onProgressChanged) => {
+const getSingleFileHash = async ({ pathToFile, onFileSizeKnown, onProgressChanged }) => {
   try {
-    const file = await readFileAsync(pathToFile, onFileSizeGetted, onProgressChanged);
+    const file = await readFileAsync({ pathToFile, onFileSizeKnown, onProgressChanged });
     const hash = await crc32(file).toString(16).toUpperCase();
     return hash;
   }
@@ -52,32 +61,30 @@ const getCurrentHashDictionary = async (event, serverHashList) => {
   const fileList = Object.keys(serverHashList);
 
   if (!currentHashDictionary) {
-    const fileSizesMap = new Map();
+    let summaryFileSize = 0;
     const readedSizeMap = new Map();
     currentHashDictionary = { };
     await Promise.all(
       fileList.map(async file => {
-        const hash = await getSingleFileHash(
-          makePathOK(file),
-          size => fileSizesMap.set(file, size),
-          readedSize => {
+        const hash = await getSingleFileHash({
+          pathToFile: makePathOK(file),
+          onFileSizeKnown: size => summaryFileSize += size,
+          onProgressChanged: readedSize => {
             let summaryReadedSize = 0;
-            let summaryFullSize = 0;
             readedSizeMap.set(file, readedSize);
-            fileSizesMap.forEach(size => summaryFullSize += size);
             readedSizeMap.forEach(size => summaryReadedSize += size);
 
-            const progress = (summaryReadedSize / summaryFullSize).toFixed(2) * 100;
+            const progress = (summaryReadedSize / summaryFileSize).toFixed(2) * 100;
             event.sender.send(ACTIONS.GET_FILES_HASH, {
               action: 'ongoing',
               progress,
               absoluteProgress: {
                 current: (summaryReadedSize / 1024 / 1024).toFixed(2),
-                end: (summaryFullSize / 1024 / 1024).toFixed(2),
+                end: (summaryFileSize / 1024 / 1024).toFixed(2),
               },
             });
           }
-        );
+        });
         currentHashDictionary[file] = hash;
       })
     );

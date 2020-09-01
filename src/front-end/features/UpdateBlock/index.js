@@ -77,16 +77,18 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.changeList = result;
-        //Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
+        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
       }
     });
   }
 
   onFileDownload = payload => {
-    const { action, progress } = payload;
+    const { action, progress, absoluteProgress = null } = payload;
+    console.log(absoluteProgress);
     this.setState({ 
       actionName: TEXT_FOR_ACTION_STEPS.DOWNLOAD_LIST_OF_FILES[action || 'finished'],
       progress,
+      absoluteProgress
     }, () => {
       if (action === 'finished') {
         this.setState({

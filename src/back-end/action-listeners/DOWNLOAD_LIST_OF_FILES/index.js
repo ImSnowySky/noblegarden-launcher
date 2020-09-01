@@ -3,14 +3,15 @@ const axios = require('axios');
 const fs = require('fs');
 const makePathOK = require('../../makePathOK');
 
-const downloadSingleFile = async ({ pathToFile, pathOnServer, onFileSizeKnown = () => null, onFileProgress = () => null }) => {
-  let file = {
-    checkInterval: -1,
-    downloadedSize: 0,
-    fullSize: 0,
-  };
+const downloadSingleFile = async ({
+  pathToFile,
+  pathOnServer,
+  onFileSizeKnown = () => 0,
+  onProgressChanged = () => 0,
+}) => new Promise(async (resolve, reject) => {
+  let downloadedSize = 0;
+  let fullSize = 0;
   let lockPathToFile = `${pathToFile}.lock`;
-  const writeStream = fs.createWriteStream(lockPathToFile);
 
   const req = await axios({
     method: 'get',
@@ -18,40 +19,42 @@ const downloadSingleFile = async ({ pathToFile, pathOnServer, onFileSizeKnown = 
     responseType: 'stream',
   });
 
-  const registerNextNotify = (delay = 1000) => {
-    setTimeout(() => {
-      fs.stat(lockPathToFile, (err, stat) => {
-        if (!err) file.downloadedSize = stat.size;
-        onFileProgress(file.downloadedSize);
-        if (!err && file.downloadedSize < file.fullSize) registerNextNotify(delay);
-        else onFileProgress(file.fullSize);
-      })
-    }, delay);
-  }
-
-  return new Promise((resolve, reject) => {
-    let error = null;
-    writeStream.on('pipe', src => {
-      file.fullSize = parseInt(src.headers['content-length']);
-      onFileSizeKnown(file.fullSize);
-      registerNextNotify(5000);
-    })
-    writeStream.on('error', err => {
-      error = err;
-      writer.close();
-      clearInterval(file.checkInterval);
-      reject(err);
-    });
-    writeStream.on('close', () => {
-      if (!error) {
-        clearInterval(file.checkInterval);
-        resolve(true);
+  const progressChangedCheckInterval = setInterval(() => {
+    fs.stat(lockPathToFile, (err, stat) => {
+      if (!err && stat.size > downloadedSize) {
+        downloadedSize = stat.size;
+        onProgressChanged(downloadedSize);
       }
-    });
-    
-    req.data.pipe(writeStream);
+    })
+  }, 500);
+
+  const writeStream = fs.createWriteStream(lockPathToFile);
+  writeStream.on('pipe', src => {
+    fullSize = parseInt(src.headers['content-length']);
+    onFileSizeKnown(fullSize);
   });
-}
+  writeStream.on('error', err => {
+    try {
+      writer.close();
+      clearInterval(progressChangedCheckInterval);
+      onProgressChanged(0);
+      reject(err);
+    } catch (e) {
+      return null;
+    }
+  });
+  writeStream.on('close', () => {
+    try {
+      clearInterval(progressChangedCheckInterval);
+      onProgressChanged(fullSize);
+      resolve(true);
+    } catch (e) {
+      return null;
+    }
+  });
+
+  req.data.pipe(writeStream);
+});
 
 const deleteOldFile = pathToFile => new Promise(
   (resolve, reject) => {
@@ -73,52 +76,47 @@ const makeNewFileNameCorrect = pathToFile => new Promise(
 
 const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
   event.sender.send(ACTIONS.DOWNLOAD_LIST_OF_FILES, { action: 'started' });
-  let summaryFilesSize = 0;
-  let currentFileSizes = Array(listOfFiles.length);
-  for (let i = 0; i < currentFileSizes.length; i++) {
-    currentFileSizes[i] = 0;
-  }
+  if (listOfFiles.length > 0) {
+    let summaryFileSize = 0;
+    const downloadedSizeMap = new Map();
 
-  await Promise.all(
-    listOfFiles.map(async (fileName, fileIndex) => {
-      const pathToFile = makePathOK(fileName);
-      try {
+    await Promise.all(
+      listOfFiles.map(async fileName => {
+        const pathToFile = makePathOK(fileName);
         await downloadSingleFile({
           pathToFile,
           pathOnServer: serverMeta[fileName].path,
-          onFileSizeKnown: expectedFileSize => summaryFilesSize += expectedFileSize,
-          onFileProgress: currentFileSize => {
-            currentFileSizes[fileIndex] = currentFileSize;
-            summaryDownloadSize = currentFileSizes.reduce((val, accum = 0) => accum += val);
+          onFileSizeKnown: size => summaryFileSize += size,
+          onProgressChanged: currentFileSize => {
+            let summaryDownloadedSize = 0;
+            downloadedSizeMap.set(fileName, currentFileSize);
+            downloadedSizeMap.forEach(size => summaryDownloadedSize += size);
             try {
               event.sender.send(
                 ACTIONS.DOWNLOAD_LIST_OF_FILES,
                 {
                   action: 'ongoing',
-                  progress: (summaryDownloadSize / summaryFilesSize).toFixed(5) * 100,
+                  progress: (summaryDownloadedSize / summaryFileSize).toFixed(5) * 100,
+                  absoluteProgress: {
+                    current: (summaryDownloadedSize / 1024 / 1024).toFixed(2),
+                    end: (summaryFileSize / 1024 / 1024).toFixed(2),
+                  },
                 }
               );
             } catch (e) {}
-
-            if (summaryDownloadSize >= summaryFilesSize) {
-              event.sender.send(
-                ACTIONS.DOWNLOAD_LIST_OF_FILES,
-                {
-                  action: 'finished',
-                  progress: 100,
-                }
-              );
-            }
           }
         });
-        if (fs.existsSync(pathToFile)) {
-          await deleteOldFile(pathToFile);
-        }
-        await makeNewFileNameCorrect(pathToFile);       
-      } catch (e) {
-        console.log(`Error in ${pathToFile}: ${e}`);
-      }
-    })
+        if (fs.existsSync(pathToFile)) await deleteOldFile(pathToFile);
+        await makeNewFileNameCorrect(pathToFile);
+      })
+    );
+  }
+  event.sender.send(
+    ACTIONS.DOWNLOAD_LIST_OF_FILES,
+    {
+      action: 'finished',
+      progress: 100,
+    }
   );
 
   return null;
