@@ -84,7 +84,6 @@ class UpdateBlock extends React.Component {
 
   onFileDownload = payload => {
     const { action, progress, absoluteProgress = null } = payload;
-    console.log(absoluteProgress);
     this.setState({ 
       actionName: TEXT_FOR_ACTION_STEPS.DOWNLOAD_LIST_OF_FILES[action || 'finished'],
       progress,

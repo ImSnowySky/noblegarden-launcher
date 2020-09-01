@@ -22,10 +22,6 @@ const getListOfChangedFiles = async (event, lists) => {
     }
   }).filter(name => name);
 
-  listOfChangedFiles.forEach(fileName => {
-    console.log(`${fileName}: ${clientList[fileName]}`);
-  })
-
   event.sender.send(
     ACTIONS.GET_LIST_OF_CHANGED_FILES,
     {
