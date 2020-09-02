@@ -9,6 +9,11 @@ const getHashAsync = ({
   onProgressChanged = () => 0,
 }) => new Promise(resolve => {
   let readedSize = 0;
+  if (!fs.existsSync(pathToFile)) {
+    onFileSizeKnown(0);
+    resolve(null);
+    return;
+  }
   const fileSize = fs.statSync(pathToFile).size;
 
   const progressChangedCheckInterval = setInterval(() => {
@@ -23,12 +28,23 @@ const getHashAsync = ({
   checksum.on('data', chunk => {
     readedSize += chunk.length;
   });
+  checksum.on('error', () => {
+    try {
+      clearInterval(progressChangedCheckInterval);
+      onProgressChanged(fileSize);
+      resolve(null);
+    } catch (e) {
+      console.log(e);
+    }
+  });
   checksum.on('end', () => {
     try {
       clearInterval(progressChangedCheckInterval);
       onProgressChanged(fileSize);
       resolve(checksum.hex());
-    } catch (e) { }
+    } catch (e) {
+      console.log(e);
+    }
   });
 });
 
