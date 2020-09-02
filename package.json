@@ -1,7 +1,7 @@
 {
   "name": "noble-launcher",
   "productName": "Noblegarden Launcher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Launcher for noblegarden.net",
   "main": ".webpack/main",
   "scripts": {
