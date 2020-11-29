@@ -10,6 +10,8 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
   app.quit();
 }
 
+app.commandLine.appendSwitch("ignore-connections-limit", "http://95.216.176.164/")
+
 app.on('ready', async() => {
   const window = getCurrentWindow();
   window.webContents.session.clearStorageData();

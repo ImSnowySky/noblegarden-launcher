@@ -22,6 +22,11 @@ const TEXT_FOR_ACTION_STEPS = {
     ongoing: 'Ищем файлы для обновления',
     finished: null,
   },
+  GET_FILES_SUMMARY_SIZE: {
+    started: 'Считаем размер файлов для загрузки',
+    ongoing: 'Считаем размер файлов для загрузки',
+    finished: null,
+  },
   DOWNLOAD_LIST_OF_FILES: {
     started: 'Загружаем обновленные файлы',
     ongoing: 'Загружаем обновленные файлы',
@@ -79,8 +84,23 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.changeList = result;
-        //Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
-        console.log("List of download: ", payload.result);
+        Dispatcher.dispatch(ACTIONS.GET_FILES_SUMMARY_SIZE, this.changeList, this.serverMeta);
+        console.log("List of download: ", result);
+      }
+    });
+  }
+
+  onFileSizeCalc = payload => {
+    const { action, progress, absoluteProgress = null, result = null } = payload;
+    this.setState({
+      actionName: TEXT_FOR_ACTION_STEPS.GET_FILES_SUMMARY_SIZE[action || 'finished'],
+      progress,
+      absoluteProgress,
+    }, () => {
+      if (action === 'finished') {
+        this.summarySize = result;
+        //Dispatcher.dispatch(ACTIONS.GET_FILES_SUMMARY_SIZE, this.changeList, this.serverMeta);
+        console.log("Summary file size: ", result);
       }
     });
   }
@@ -106,7 +126,8 @@ class UpdateBlock extends React.Component {
     Dispatcher.on(ACTIONS.GET_SERVER_HASHLIST, (_, payload) => this.onGetServerHashlist(payload));
     Dispatcher.on(ACTIONS.GET_FILES_HASH, (_, payload) => this.onGetFilesHash(payload));
     Dispatcher.on(ACTIONS.GET_LIST_OF_CHANGED_FILES, (_, payload) => this.onFileListChangeFormation(payload));
-    //Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onFileDownload(payload));
+    Dispatcher.on(ACTIONS.GET_FILES_SUMMARY_SIZE, (_, payload) => this.onFileSizeCalc(payload));
+    Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onFileDownload(payload));
   }
 
   render() {

@@ -8,6 +8,7 @@ module.exports = {
   GET_SERVER_HASHLIST: 'get-server-hashlist',
   GET_FILES_HASH: 'get-files-hash',
   GET_LIST_OF_CHANGED_FILES: 'get-list-of-changed-files',
+  GET_FILES_SUMMARY_SIZE: 'get-files-summary-size',
   DOWNLOAD_LIST_OF_FILES: 'download-list-of-files',
   GET_ONLINE_COUNT: 'get-online-count',
   GET_LAST_NEWS: 'get-last-news',

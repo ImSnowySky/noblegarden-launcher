@@ -3,6 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 const makePathOK = require('../../makePathOK');
 
+/*
 const downloadSingleFile = async ({
   pathToFile,
   pathOnServer,
@@ -13,48 +14,53 @@ const downloadSingleFile = async ({
   let fullSize = 0;
   let lockPathToFile = `${pathToFile}.lock`;
 
-  const req = await axios({
-    method: 'get',
-    url: pathOnServer,
-    responseType: 'stream',
-  });
+  try {
+    const req = await axios({
+      method: 'get',
+      url: pathOnServer,
+      responseType: 'stream',
+    });
 
-  const progressChangedCheckInterval = setInterval(() => {
-    fs.stat(lockPathToFile, (err, stat) => {
-      if (!err && stat.size > downloadedSize) {
-        downloadedSize = stat.size;
-        onProgressChanged(downloadedSize);
+    const progressChangedCheckInterval = setInterval(() => {
+      fs.stat(lockPathToFile, (err, stat) => {
+        if (!err && stat.size > downloadedSize) {
+          downloadedSize = stat.size;
+          onProgressChanged(downloadedSize);
+        }
+      })
+    }, 500);
+
+    const writeStream = fs.createWriteStream(lockPathToFile);
+    writeStream.on('pipe', src => {
+      fullSize = parseInt(src.headers['content-length']);
+      onFileSizeKnown(fullSize);
+    });
+    writeStream.on('error', err => {
+      try {
+        writer.close();
+        clearInterval(progressChangedCheckInterval);
+        onProgressChanged(0);
+        reject(err);
+      } catch (e) {
+        return null;
       }
-    })
-  }, 500);
+    });
+    writeStream.on('close', () => {
+      try {
+        clearInterval(progressChangedCheckInterval);
+        onProgressChanged(fullSize);
+        resolve(true);
+      } catch (e) {
+        return null;
+      }
+    });
 
-  const writeStream = fs.createWriteStream(lockPathToFile);
-  writeStream.on('pipe', src => {
-    fullSize = parseInt(src.headers['content-length']);
-    onFileSizeKnown(fullSize);
-  });
-  writeStream.on('error', err => {
-    try {
-      writer.close();
-      clearInterval(progressChangedCheckInterval);
-      onProgressChanged(0);
-      reject(err);
-    } catch (e) {
-      return null;
-    }
-  });
-  writeStream.on('close', () => {
-    try {
-      clearInterval(progressChangedCheckInterval);
-      onProgressChanged(fullSize);
-      resolve(true);
-    } catch (e) {
-      return null;
-    }
-  });
-
-  req.data.pipe(writeStream);
+    req.data.pipe(writeStream);
+  } catch (e) {
+    console.log(`REFUSED ${pathOnServer}`)
+  }
 });
+*/
 
 const deleteOldFile = pathToFile => new Promise(
   (resolve, reject) => {
@@ -77,21 +83,26 @@ const makeNewFileNameCorrect = pathToFile => new Promise(
 const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
   event.sender.send(ACTIONS.DOWNLOAD_LIST_OF_FILES, { action: 'started' });
   if (listOfFiles.length > 0) {
-    let summaryFileSize = 0;
+    //let summaryFileSize = await getFileSize(listOfFiles, serverMeta);
     const downloadedSizeMap = new Map();
 
+    listOfFiles.forEach(async fileName => {
+      const pathToFile = makePathOK(fileName);
+    })
+    /*
     await Promise.all(
       listOfFiles.map(async fileName => {
         const pathToFile = makePathOK(fileName);
-        await downloadSingleFile({
-          pathToFile,
-          pathOnServer: serverMeta[fileName].path,
-          onFileSizeKnown: size => summaryFileSize += size,
-          onProgressChanged: currentFileSize => {
-            let summaryDownloadedSize = 0;
-            downloadedSizeMap.set(fileName, currentFileSize);
-            downloadedSizeMap.forEach(size => summaryDownloadedSize += size);
-            try {
+        console.log(pathToFile);
+        try {
+          await downloadSingleFile({
+            pathToFile,
+            pathOnServer: serverMeta[fileName].path,
+            onFileSizeKnown: size => summaryFileSize += size,
+            onProgressChanged: currentFileSize => {
+              let summaryDownloadedSize = 0;
+              downloadedSizeMap.set(fileName, currentFileSize);
+              downloadedSizeMap.forEach(size => summaryDownloadedSize += size);
               event.sender.send(
                 ACTIONS.DOWNLOAD_LIST_OF_FILES,
                 {
@@ -103,14 +114,18 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
                   },
                 }
               );
-            } catch (e) {}
-          }
-        });
-        if (fs.existsSync(pathToFile)) await deleteOldFile(pathToFile);
-        await makeNewFileNameCorrect(pathToFile);
+            }
+          });
+          if (fs.existsSync(pathToFile)) await deleteOldFile(pathToFile);
+          await makeNewFileNameCorrect(pathToFile);
+        } catch (e) {
+          return false;
+        }
       })
     );
+    */
   }
+  /*
   event.sender.send(
     ACTIONS.DOWNLOAD_LIST_OF_FILES,
     {
@@ -118,6 +133,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
       progress: 100,
     }
   );
+  */
 
   return null;
 }
