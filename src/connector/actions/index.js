@@ -14,4 +14,6 @@ module.exports = {
   GET_ONLINE_COUNT: 'get-online-count',
   GET_LAST_NEWS: 'get-last-news',
   START_EXE: 'start-exe',
+  SAVE_TO_STORAGE: 'save-to-storage',
+  GET_STORAGE: 'get-storage',
 };
