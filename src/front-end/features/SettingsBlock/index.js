@@ -11,7 +11,6 @@ class SettingsBlock extends React.Component {
   };
 
   componentDidMount() {
-    console.log(localStorage);
     Dispatcher.on(ACTIONS.TOGGLE_SETTINGS, this.changeOpened);
     Dispatcher.on(ACTIONS.GET_CUSTOM_PATCHES, (_, payload) => this.onGetCustomPatches(payload));
   }
