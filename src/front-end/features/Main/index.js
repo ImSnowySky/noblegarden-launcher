@@ -5,6 +5,7 @@ import * as Elements from './elements';
 import Header from 'front/features/Header';
 import ContentBlock from 'front/features/ContentBlock';
 import UpdateBlock from 'front/features/UpdateBlock';
+import SettingsBlock from 'front/features/SettingsBlock';
 import Preloader from '../shared/Preloader/index';
 import ErrorBlock from '../ErrorBlock';
 
@@ -42,6 +43,7 @@ class Main extends React.Component {
                     ? <>
                         <ContentBlock />
                         <UpdateBlock />
+                        <SettingsBlock />
                       </>
                     : <ErrorBlock
                         errorType = {isVersionOK === 'not-working' ? 'not-working' : 'not-last-version'}

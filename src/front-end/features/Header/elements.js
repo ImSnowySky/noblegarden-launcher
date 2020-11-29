@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import closeImg from 'assets/header/close.svg';
+import settingsImg from 'assets/header/settings.svg';
 import getColor, { COLORS } from 'front/features/shared/colors';
 
 export const Container = styled.div`
@@ -58,6 +59,23 @@ export const Subtitle = styled.div`
   color: ${getColor(COLORS.WHITE, 85)};
 `;
 
+export const SettingsBlock = styled.div`
+  width: 24px;
+  height: 24px;
+  background-image: url(${settingsImg});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.75;
+  margin-right: 16px;
+  transition: opacity 125ms ease-in-out;
+
+  &:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+`;
+
 export const CloseBlock = styled.div`
   width: 24px;
   height: 24px;
@@ -76,7 +94,7 @@ export const CloseBlock = styled.div`
 
 export const MoveWindowBlock = styled.div`
   position: absolute;
-  width: 56%;
+  width: 45%;
   height: 48px;
   background: ${getColor(COLORS.BLACK, 35)};
   top: -30%;

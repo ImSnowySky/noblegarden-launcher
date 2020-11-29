@@ -91,19 +91,17 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
             let summaryDownloadedSize = 0;
             downloadedSizeMap.set(fileName, currentFileSize);
             downloadedSizeMap.forEach(size => summaryDownloadedSize += size);
-            try {
-              event.sender.send(
-                ACTIONS.DOWNLOAD_LIST_OF_FILES,
-                {
-                  action: 'ongoing',
-                  progress: (summaryDownloadedSize / summaryFileSize).toFixed(5) * 100,
-                  absoluteProgress: {
-                    current: (summaryDownloadedSize / 1024 / 1024).toFixed(2),
-                    end: (summaryFileSize / 1024 / 1024).toFixed(2),
-                  },
-                }
-              );
-            } catch (e) {}
+            event.sender.send(
+              ACTIONS.DOWNLOAD_LIST_OF_FILES,
+              {
+                action: 'ongoing',
+                progress: (summaryDownloadedSize / summaryFileSize).toFixed(5) * 100,
+                absoluteProgress: {
+                  current: (summaryDownloadedSize / 1024 / 1024).toFixed(2),
+                  end: (summaryFileSize / 1024 / 1024).toFixed(2),
+                },
+              }
+            );
           }
         });
         if (fs.existsSync(pathToFile)) await deleteOldFile(pathToFile);

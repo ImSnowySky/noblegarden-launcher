@@ -1,5 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
-import backrgoundIMG from 'assets/main/bg.png';
+import backrgoundIMG from 'assets/main/bg.jpg';
 import getColor, { COLORS } from 'front/features/shared/colors';
 
 const backgroundAnim = keyframes`

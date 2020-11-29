@@ -1,6 +1,7 @@
 module.exports = {
   CHECK_LAUNCHER_VERSION: 'check-launcher-version',
   CLOSE_LAUNCHER: 'close-launcher',
+  TOGGLE_SETTINGS: 'toggle-settings',
   OPEN_LINK: 'open-link',
   GET_VK_LINK: 'get-vk-link',
   GET_DISCORD_LINK: 'get-discord-link',
