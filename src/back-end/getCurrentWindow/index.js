@@ -10,7 +10,7 @@ const getCurrentWindow = () => {
       title: 'Noblegarden Launcher',
       show: false,
       frame: false,
-      resizable: false,
+      resizable: true,
       webPreferences: {
         nodeIntegration: true,
       },

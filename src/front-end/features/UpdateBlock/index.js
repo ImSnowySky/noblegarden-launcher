@@ -51,6 +51,7 @@ class UpdateBlock extends React.Component {
       if (action === 'finished') {
         this.serverMeta = result;
         Dispatcher.dispatch(ACTIONS.GET_FILES_HASH, result);
+        console.log("Server hash list: ", payload.result);
       }
     });
   }
@@ -65,6 +66,7 @@ class UpdateBlock extends React.Component {
       if (action === 'finished') {
         this.hashList = result;
         Dispatcher.dispatch(ACTIONS.GET_LIST_OF_CHANGED_FILES, { serverList: this.serverMeta, clientList: this.hashList });
+        console.log("Changed files list: ", payload.result);
       }
     });
   }
@@ -77,7 +79,8 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.changeList = result;
-        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
+        //Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta);
+        console.log("List of download: ", payload.result);
       }
     });
   }
@@ -103,7 +106,7 @@ class UpdateBlock extends React.Component {
     Dispatcher.on(ACTIONS.GET_SERVER_HASHLIST, (_, payload) => this.onGetServerHashlist(payload));
     Dispatcher.on(ACTIONS.GET_FILES_HASH, (_, payload) => this.onGetFilesHash(payload));
     Dispatcher.on(ACTIONS.GET_LIST_OF_CHANGED_FILES, (_, payload) => this.onFileListChangeFormation(payload));
-    Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onFileDownload(payload));
+    //Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onFileDownload(payload));
   }
 
   render() {
