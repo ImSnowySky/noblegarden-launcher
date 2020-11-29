@@ -27,45 +27,37 @@ class ContentBlock extends React.Component {
     Dispatcher.dispatch(ACTIONS.GET_DISCORD_LINK);
   }
 
-  onVKLinkGet = payload => {
-    const { action, result } = payload;
+  onVKLinkGet = ({ action, result }) =>
     this.setState({ 
       vk: {
         loading: action === 'started',
         link: result,
       },
     });
-  };
 
-  onDiscordLinkGet = payload => {
-    const { action, result } = payload;
+  onDiscordLinkGet = ({ action, result }) =>
     this.setState({ 
       discord: {
         loading: action === 'started',
         link: result,
       },
     });
-  };
 
-  onOnlineCountGet = payload => {
-    const { action, result } = payload;
+  onOnlineCountGet = ({ action, result }) =>
     this.setState({ 
       online: {
         loading: action === 'started',
         count: result,
       }
     });
-  }
 
-  onNewsGet = payload => {
-    const { action, result } = payload;
+  onNewsGet = ({ action, result }) =>
     this.setState({
       news: {
         loading: action === 'started',
         data: result,
       },
     });
-  }
 
   render() {
     const { loading: isOnlineLoading, count: onlineCount } = this.state.online;

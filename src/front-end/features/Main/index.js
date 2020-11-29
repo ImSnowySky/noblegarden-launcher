@@ -18,15 +18,14 @@ class Main extends React.Component {
   componentDidMount() {
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_VERSION, (_, payload) => this.onLauncherVersionGet(payload));
     Dispatcher.dispatch(ACTIONS.CHECK_LAUNCHER_VERSION);
+    Dispatcher.dispatch(ACTIONS.GET_CUSTOM_PATCHES);
   }
 
-  onLauncherVersionGet = payload => {
-    const { action, result } = payload;
+  onLauncherVersionGet = ({ action, result }) =>
     this.setState({ 
       loading: action === 'started',
       isVersionOK: result,
     });
-  }
 
   render() {
     const { loading = false, isVersionOK = false } = this.state;

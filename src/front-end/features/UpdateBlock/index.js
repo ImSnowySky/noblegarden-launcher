@@ -46,8 +46,7 @@ class UpdateBlock extends React.Component {
     absoluteProgress: null,
   };
 
-  onGetServerHashlist = payload => {
-    const { action, progress, result = null } = payload;
+  onGetServerHashlist = ({ action, progress, result = null }) => {
     action === 'started' && this.setState({ isOnUpdate: true });
     this.setState({
       actionName: TEXT_FOR_ACTION_STEPS.GET_SERVER_HASHLIST[action || 'finished'],
@@ -56,13 +55,12 @@ class UpdateBlock extends React.Component {
       if (action === 'finished') {
         this.serverMeta = result;
         Dispatcher.dispatch(ACTIONS.GET_FILES_HASH, result);
-        console.log("Server hash list: ", payload.result);
+        console.log("Server hash list: ", result);
       }
     });
   }
 
-  onGetFilesHash = payload => {
-    const { action, progress, absoluteProgress = null, result = null } = payload;
+  onGetFilesHash = ({ action, progress, absoluteProgress = null, result = null }) =>
     this.setState({
       actionName: TEXT_FOR_ACTION_STEPS.GET_FILES_HASH[action || 'finished'],
       progress,
@@ -71,13 +69,11 @@ class UpdateBlock extends React.Component {
       if (action === 'finished') {
         this.hashList = result;
         Dispatcher.dispatch(ACTIONS.GET_LIST_OF_CHANGED_FILES, { serverList: this.serverMeta, clientList: this.hashList });
-        console.log("Changed files list: ", payload.result);
+        console.log("Changed files list: ", result);
       }
     });
-  }
 
-  onFileListChangeFormation = payload => {
-    const { action, progress, result = null } = payload;
+  onFileListChangeFormation = ({ action, progress, result = null }) =>
     this.setState({
       actionName: TEXT_FOR_ACTION_STEPS.GET_LIST_OF_CHANGED_FILES[action || 'finished'],
       progress,
@@ -88,10 +84,8 @@ class UpdateBlock extends React.Component {
         console.log("List of download: ", result);
       }
     });
-  }
 
-  onFileSizeCalc = payload => {
-    const { action, progress, absoluteProgress = null, result = null } = payload;
+  onFileSizeCalc = ({ action, progress, absoluteProgress = null, result = null }) =>
     this.setState({
       actionName: TEXT_FOR_ACTION_STEPS.GET_FILES_SUMMARY_SIZE[action || 'finished'],
       progress,
@@ -99,14 +93,12 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.summarySize = result;
-        //Dispatcher.dispatch(ACTIONS.GET_FILES_SUMMARY_SIZE, this.changeList, this.serverMeta);
+        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta, this.summarySize);
         console.log("Summary file size: ", result);
       }
     });
-  }
 
-  onFileDownload = payload => {
-    const { action, progress, absoluteProgress = null } = payload;
+  onFileDownload = ({ action, progress, absoluteProgress = null }) =>
     this.setState({ 
       actionName: TEXT_FOR_ACTION_STEPS.DOWNLOAD_LIST_OF_FILES[action || 'finished'],
       progress,
@@ -120,7 +112,6 @@ class UpdateBlock extends React.Component {
         })
       }
     });
-  }
 
   componentDidMount() {
     Dispatcher.on(ACTIONS.GET_SERVER_HASHLIST, (_, payload) => this.onGetServerHashlist(payload));

@@ -1,5 +1,6 @@
 module.exports = {
   CHECK_LAUNCHER_VERSION: 'check-launcher-version',
+  GET_CUSTOM_PATCHES: 'get-custom-patches',
   CLOSE_LAUNCHER: 'close-launcher',
   TOGGLE_SETTINGS: 'toggle-settings',
   OPEN_LINK: 'open-link',

@@ -80,14 +80,14 @@ const makeNewFileNameCorrect = pathToFile => new Promise(
   }
 )
 
-const downloadListOfFiles = async (event, listOfFiles, serverMeta) => {
+const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownload) => {
   event.sender.send(ACTIONS.DOWNLOAD_LIST_OF_FILES, { action: 'started' });
   if (listOfFiles.length > 0) {
-    //let summaryFileSize = await getFileSize(listOfFiles, serverMeta);
     const downloadedSizeMap = new Map();
 
     listOfFiles.forEach(async fileName => {
       const pathToFile = makePathOK(fileName);
+      console.log(pathToFile);
     })
     /*
     await Promise.all(
