@@ -120,7 +120,9 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
           makeNewFileNameCorrect(pathToFile);
         })
       );
+      console.log('resolved');
     }
+    console.log('all resolved');
   }
   event.sender.send(
     ACTIONS.DOWNLOAD_LIST_OF_FILES,
