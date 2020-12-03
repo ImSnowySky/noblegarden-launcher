@@ -13,22 +13,44 @@ class Main extends React.Component {
   state = {
     loading: true,
     isVersionOK: false,
+    isAccessGranted: false,
   }
 
   componentDidMount() {
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_VERSION, (_, payload) => this.onLauncherVersionGet(payload));
+    Dispatcher.on(ACTIONS.CHECK_LAUNCHER_FOLDER_ACCESS, (_, payload) => this.onLauncherFolderAccess(payload));
     Dispatcher.dispatch(ACTIONS.CHECK_LAUNCHER_VERSION);
     Dispatcher.dispatch(ACTIONS.GET_CUSTOM_PATCHES);
   }
 
   onLauncherVersionGet = ({ action, result }) =>
     this.setState({ 
-      loading: action === 'started',
+      loading: true,
       isVersionOK: result,
+    }, () => {
+      if (action !== 'finished') return;
+      Dispatcher.dispatch(ACTIONS.CHECK_LAUNCHER_FOLDER_ACCESS);      
     });
 
+  onLauncherFolderAccess = ({ action, result }) =>
+    this.setState({
+      loading: action === 'started',
+      isAccessGranted: result,
+    });
+
+  errorType = () => {
+    const { isVersionOK = false, isAccessGranted = false } = this.state;    
+    if (isVersionOK === 'not-working') return isVersionOK;
+    if (!isVersionOK) return 'not-last-version';
+    if (isAccessGranted !== null) return 'no-access';
+
+    return null;
+  }
+
   render() {
-    const { loading = false, isVersionOK = false } = this.state;
+    const { loading = false, isAccessGranted = null } = this.state;
+    const errorType = this.errorType();
+
     return (
       <Elements.Container withImage = {!loading}>
         {
@@ -38,15 +60,13 @@ class Main extends React.Component {
                 <Elements.Gradient />
                 <Header />
                 {
-                  isVersionOK !== 'not-working' && isVersionOK
+                  !errorType
                     ? <>
                         <ContentBlock />
                         <UpdateBlock />
                         <SettingsBlock />
                       </>
-                    : <ErrorBlock
-                        errorType = {isVersionOK === 'not-working' ? 'not-working' : 'not-last-version'}
-                      />
+                    : <ErrorBlock errorType = {errorType} msg = {isAccessGranted}/>
                 }
                 <Elements.Version>v1.1.0</Elements.Version>
               </>

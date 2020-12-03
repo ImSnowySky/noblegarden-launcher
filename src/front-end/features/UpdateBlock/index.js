@@ -43,6 +43,7 @@ class UpdateBlock extends React.Component {
     isOnUpdate: false,
     actionName: null,
     progress: 0,
+    downloadThreads: 1,
     absoluteProgress: null,
   };
 
@@ -93,8 +94,10 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.summarySize = result;
-        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta, this.summarySize);
+        const { downloadThreads } = this.state;
+        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta, this.summarySize, 2);
         console.log("Summary file size: ", result);
+        console.log("Thread count: ", downloadThreads);
       }
     });
 

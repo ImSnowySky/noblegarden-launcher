@@ -2,13 +2,14 @@ import React from 'react';
 import ACTIONS from 'connector/actions';
 import Dispatcher from 'connector/dispatcher';
 import * as Elements from './elements';
+import Patch from './components/Patch';
 
 class SettingsBlock extends React.Component {
   state = {
     isOpened: false,
     customPatches: [],
     settings: {
-      downloadThreads: 4,
+      downloadThreads: 1,
     },
   };
 
@@ -30,9 +31,7 @@ class SettingsBlock extends React.Component {
       downloadThreads: result.downloadThreads || 4,
     };
 
-    this.setState({ settings: result }, () => {
-      console.log(this.state.settings)
-    });
+    this.setState({ settings: result });
   }
 
   onGetCustomPatches = ({ result = [] }) => {
@@ -51,7 +50,12 @@ class SettingsBlock extends React.Component {
   }
 
   render() {
-    const { isOpened = false, settings } = this.state;
+    const { isOpened = false, settings, customPatches } = this.state;
+    const patches = Object.keys(customPatches).map(patchName => ({
+      path: patchName,
+      name: patchName.split('/').reverse()[0],
+      description: customPatches[patchName].description,
+    }));
 
     return (
       <Elements.Container isOpened = {isOpened}>
@@ -70,6 +74,9 @@ class SettingsBlock extends React.Component {
           </Elements.Block>
           <Elements.Block>
             <Elements.BlockTitle>Необязательные патчи</Elements.BlockTitle>
+            {
+              patches.map((patch, i) => <Patch {...patch} key = {i} />)
+            }
           </Elements.Block>
         </Elements.Content>
       </Elements.Container>

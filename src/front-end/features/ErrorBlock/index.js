@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Elements from './elements';
 
-const errorByType = type => {
+const errorByType = (type, msg) => {
   const errorTypes = {
     'unknown': <p style = {{ textAlign: 'center' }}>
       Что-то пошло не так.<br />Пожалуйста, попробуйте позже.
@@ -14,16 +14,23 @@ const errorByType = type => {
       <br /><br />
       Обновите ланучер через сайт проекта.
     </>,
+    'no-access': <p style = {{ textAlign: 'center' }}>
+      Нет доступа на чтение/запись в директорию
+      <br /><br />
+      <span style = {{ color: 'darkred' }}>{msg}</span>
+      <br /><br />
+      <span style = {{ fontSize: 12, color: 'orange' }}>Запустите от имени администратора и проверьте правильность установки</span>
+    </p>
   };
 
   return errorTypes[type] || errorTypes.unknown;
 }
 
-const ErrorBlock = ({ errorType = 'not-working' }) => 
+const ErrorBlock = ({ errorType = 'unknown', msg = null }) => 
   <Elements.Container>
     <Elements.Header>Упс!</Elements.Header>
     <Elements.Content>
-      { errorByType(errorType) }
+      { errorByType(errorType, msg) }
     </Elements.Content>
   </Elements.Container>
 

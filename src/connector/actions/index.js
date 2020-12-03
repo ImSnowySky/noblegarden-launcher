@@ -1,5 +1,6 @@
 module.exports = {
   CHECK_LAUNCHER_VERSION: 'check-launcher-version',
+  CHECK_LAUNCHER_FOLDER_ACCESS: 'check-launcher-folder-access',
   GET_CUSTOM_PATCHES: 'get-custom-patches',
   CLOSE_LAUNCHER: 'close-launcher',
   TOGGLE_SETTINGS: 'toggle-settings',
