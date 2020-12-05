@@ -16,6 +16,7 @@ const colors = {
   [COLORS.BLACK]: '5,5,5',
   [COLORS.LINK]: '3,128,206',
   [COLORS.ERROR]: '150, 0, 30',
+  [COLORS.SUCCESS]: '70, 150, 90',
 };
 
 const getColor = (name, transparency = 100, add = 0) => {

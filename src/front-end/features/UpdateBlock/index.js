@@ -43,7 +43,6 @@ class UpdateBlock extends React.Component {
     isOnUpdate: false,
     actionName: null,
     progress: 0,
-    downloadThreads: 1,
     absoluteProgress: null,
   };
 
@@ -54,7 +53,16 @@ class UpdateBlock extends React.Component {
       progress,
     }, () => {
       if (action === 'finished') {
-        this.serverMeta = result;
+        const { customPatches, settings } = this.props;
+
+        const selectedCustomPatches = {};
+        Object.keys(customPatches).forEach(name => {
+          if (settings.watchedCustomPatches.some(patch => patch == name)) {
+            selectedCustomPatches[name] = customPatches[name]
+          }
+        });
+  
+        this.serverMeta = {...result, ...selectedCustomPatches};
         Dispatcher.dispatch(ACTIONS.GET_FILES_HASH, result);
         console.log("Server hash list: ", result);
       }
@@ -94,10 +102,10 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.summarySize = result;
-        const { downloadThreads } = this.state;
-        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta, this.summarySize, 2);
+        const { settings } = this.props;
+        Dispatcher.dispatch(ACTIONS.DOWNLOAD_LIST_OF_FILES, this.changeList, this.serverMeta, this.summarySize, settings.downloadThreads || 1);
         console.log("Summary file size: ", result);
-        console.log("Thread count: ", downloadThreads);
+        console.log("Thread count: ", settings.downloadThreads || 1);
       }
     });
 
@@ -122,6 +130,28 @@ class UpdateBlock extends React.Component {
     Dispatcher.on(ACTIONS.GET_LIST_OF_CHANGED_FILES, (_, payload) => this.onFileListChangeFormation(payload));
     Dispatcher.on(ACTIONS.GET_FILES_SUMMARY_SIZE, (_, payload) => this.onFileSizeCalc(payload));
     Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onFileDownload(payload));
+  }
+
+  componentDidUpdate(prevProps) {
+    const { settings = {} } = this.props;
+    const { actionName } = this.state;
+    const { watchedCustomPatches = [] } = settings;
+
+    const { settings: prevSettings } = prevProps;
+    const { watchedCustomPatches : prevWatchedCustomPatches = [] } = prevSettings;
+
+    if (watchedCustomPatches.length !== prevWatchedCustomPatches.length && actionName === 'Обновлено') {
+      this.serverMeta = null;
+      this.hashList = null;
+      this.changeList = null;
+
+      this.setState({
+        isOnUpdate: false,
+        actionName: null,
+        progress: 0,
+        absoluteProgress: null,
+      });
+    }
   }
 
   render() {

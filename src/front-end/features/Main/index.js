@@ -14,13 +14,72 @@ class Main extends React.Component {
     loading: true,
     isVersionOK: false,
     isAccessGranted: false,
+    customPatches: [],
+    settings: {
+      downloadThreads: 1,
+      watchedCustomPatches: [],
+    },
   }
 
   componentDidMount() {
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_VERSION, (_, payload) => this.onLauncherVersionGet(payload));
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_FOLDER_ACCESS, (_, payload) => this.onLauncherFolderAccess(payload));
+    Dispatcher.on(ACTIONS.GET_CUSTOM_PATCHES, (_, payload) => this.onGetCustomPatches(payload));
+    Dispatcher.on(ACTIONS.GET_STORAGE, (_, payload) => this.onStorageGet(payload));
     Dispatcher.dispatch(ACTIONS.CHECK_LAUNCHER_VERSION);
     Dispatcher.dispatch(ACTIONS.GET_CUSTOM_PATCHES);
+    Dispatcher.dispatch(ACTIONS.GET_STORAGE);
+  }
+
+  onGetCustomPatches = ({ action, result = [] }) => {
+    action === 'finished' && this.setState({ customPatches: result });
+  }
+
+  onStorageGet = ({ result }) => {
+    if (!result) result = {};
+
+    result = {
+      downloadThreads: result.downloadThreads || 1,
+      watchedCustomPatches: result.watchedCustomPatches || [],
+    };
+
+    this.setState({ settings: result });
+  }
+
+  changeDownloadThreads = threadsCount => {
+    if (!threadsCount) return null;
+    Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'downloadThreads', value: threadsCount });
+
+    this.setState({
+      settings: {
+        ...this.state.settings,
+        downloadThreads: threadsCount,
+      }
+    });
+  }
+
+  watchPatch = patchName => {
+    const watchedCustomPatches = [...new Set([...this.state.settings.watchedCustomPatches, patchName])];
+    Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'watchedCustomPatches', value: watchedCustomPatches });
+
+    this.setState({
+      settings: {
+        ...this.state.settings,
+        watchedCustomPatches,
+      },
+    });
+  }
+
+  unwatchPatch = patchName => {
+    const watchedCustomPatches = this.state.settings.watchedCustomPatches.filter(name => name !== patchName);
+    Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'watchedCustomPatches', value: watchedCustomPatches });
+
+    this.setState({
+      settings: {
+        ...this.state.settings,
+        watchedCustomPatches,
+      },
+    });
   }
 
   onLauncherVersionGet = ({ action, result }) =>
@@ -48,7 +107,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const { loading = false, isAccessGranted = null } = this.state;
+    const { loading = false, isAccessGranted = null, customPatches, settings } = this.state;
     const errorType = this.errorType();
 
     return (
@@ -63,8 +122,14 @@ class Main extends React.Component {
                   !errorType
                     ? <>
                         <ContentBlock />
-                        <UpdateBlock />
-                        <SettingsBlock />
+                        <UpdateBlock settings = {settings} customPatches = {customPatches} />
+                        <SettingsBlock
+                          customPatches = {customPatches}
+                          settings = {settings}
+                          watchPatch = {this.watchPatch}
+                          unwatchPatch = {this.unwatchPatch}
+                          changeDownloadThreads = {this.changeDownloadThreads}
+                        />
                       </>
                     : <ErrorBlock errorType = {errorType} msg = {isAccessGranted}/>
                 }

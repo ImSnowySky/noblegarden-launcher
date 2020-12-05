@@ -8,12 +8,30 @@ export const Container = styled.div`
   top: 61px;
   right: -304px;
   width: 284px;
-  height: 100%;
+  height: calc(100% - 60px);
   background-color: ${getColor(COLORS.WHITE, 100)};
   box-sizing: border-box;
   z-index: 1000;
   transition: right 150ms ease-in-out;
   box-shadow: -15px 0px 20px ${getColor(COLORS.BLACK, 55)};
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${getColor(COLORS.HEADER, 100, 30)};
+    transition: background 125ms ease-in-out;
+    &:hover {
+      background: ${getColor(COLORS.HEADER, 100, 40)};
+    }
+  }
 
   ${props => props.isOpened && css`
     right: 0;
