@@ -133,7 +133,7 @@ class Main extends React.Component {
                       </>
                     : <ErrorBlock errorType = {errorType} msg = {isAccessGranted}/>
                 }
-                <Elements.Version>v1.1.0</Elements.Version>
+                <Elements.Version>v1.2.0-test</Elements.Version>
               </>
         }
       </Elements.Container>
