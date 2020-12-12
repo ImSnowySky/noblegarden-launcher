@@ -19,7 +19,14 @@ const errorByType = (type, msg) => {
       <br /><br />
       <span style = {{ color: 'darkred' }}>{msg}</span>
       <br /><br />
-      <span style = {{ fontSize: 12, color: 'orange' }}>Запустите от имени администратора и проверьте правильность установки</span>
+      <span style = {{ fontSize: 13, lineHeight: 1.25 }}>Запустите лаунчер от имени администратора и проверьте правильность его установки</span>
+    </p>,
+    'no-file-access': <p style = {{ textAlign: 'center' }}>
+      Нет доступа на изменение файла
+      <br /><br />
+      <span style = {{ color: 'darkred' }}>{msg}</span>
+      <br /><br />
+      <span style = {{ fontSize: 13, lineHeight: 1.25 }}>Запустите лаунчер от имени администратора, закройте все иные программы, которые используют этот файл, если они есть</span>
     </p>
   };
 
