@@ -1,25 +1,23 @@
-const {BrowserWindow} = require("electron");
 const {download} = require("electron-dl");
 const ACTIONS = require('../../../connector/actions');
 const fs = require('fs');
 const makePathOK = require('../../makePathOK');
 const chunk = require('lodash/chunk')
+const getCurrentWindow = require('../../getCurrentWindow')
 
 const downloadSingleFile = async ({
   pathToFile,
   pathOnServer,
   onProgressChanged = () => 0,
-}) => new Promise(async (resolve, reject) => {
+}) => new Promise((resolve, reject) => {
   const fileName = pathToFile.split('\\').reverse()[0];
   const directory = pathToFile.replace(`\\${fileName}`, '');
 
-  download(BrowserWindow.getFocusedWindow(), pathOnServer, {
+  download(getCurrentWindow(), pathOnServer, {
     directory,
     filename: `${fileName}.lock`,
-    onProgress: ({ transferredBytes }) => onProgressChanged(transferredBytes)
-  })
-    .then(() => resolve())
-    .catch(() => reject())
+    onProgress: ({ transferredBytes }) => onProgressChanged(transferredBytes),
+  }).then(() => resolve()).catch(e => console.log(e));
 });
 
 const deleteOldFile = pathToFile => {
