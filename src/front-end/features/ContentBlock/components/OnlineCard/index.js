@@ -5,7 +5,7 @@ import * as Elements from './elements';
 import Link from 'front/features/shared/Link';
 import Preloader from 'front/features/shared/Preloader';
 
-const openOnlineCount = () => Dispatcher.dispatch(ACTIONS.OPEN_LINK, 'http://noblegarden.net/armory/character-list');
+const openOnlineCount = () => Dispatcher.dispatch(ACTIONS.OPEN_LINK, 'https://noblegarden.net/armory/character-list');
 
 const Online = ({ loading, online }) => <Elements.Container>
   <Elements.Left>

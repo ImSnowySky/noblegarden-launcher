@@ -5,13 +5,13 @@ import charIMG from 'assets/squares/character.jpg';
 export default [{
   name: 'Гильдии',
   image: guildsIMG,
-  link: 'http://noblegarden.net/guild',
+  link: 'https://noblegarden.net/guild',
 }, {
   name: 'Сюжеты',
   image: plotsIMG,
-  link: 'http://noblegarden.net/storyline',
+  link: 'https://noblegarden.net/storyline',
 }, {
   name: 'Персонажи',
   image: charIMG,
-  link: 'http://noblegarden.net/charlist',
+  link: 'https://noblegarden.net/charlist',
 }];

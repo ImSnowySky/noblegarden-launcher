@@ -46,6 +46,19 @@ class UpdateBlock extends React.Component {
     absoluteProgress: null,
   };
 
+  getWatchedCustomPatches = () => {
+    const { customPatches, settings } = this.props;
+
+    const watchedCustomPatches = {};
+    Object.keys(customPatches).forEach(name => {
+      if (settings.watchedCustomPatches.some(patch => patch == name)) {
+        watchedCustomPatches[name] = customPatches[name]
+      }
+    });
+
+    return watchedCustomPatches;
+  }
+
   onGetServerHashlist = ({ action, progress, result = null }) => {
     action === 'started' && this.setState({ isOnUpdate: true });
     this.setState({
@@ -53,18 +66,10 @@ class UpdateBlock extends React.Component {
       progress,
     }, () => {
       if (action === 'finished') {
-        const { customPatches, settings } = this.props;
-
-        const selectedCustomPatches = {};
-        Object.keys(customPatches).forEach(name => {
-          if (settings.watchedCustomPatches.some(patch => patch == name)) {
-            selectedCustomPatches[name] = customPatches[name]
-          }
-        });
-  
-        this.serverMeta = {...result, ...selectedCustomPatches};
-        Dispatcher.dispatch(ACTIONS.GET_FILES_HASH, result);
-        console.log("Server hash list: ", result);
+        const watchedCustomPatches = this.getWatchedCustomPatches();
+        this.serverMeta = {...result, ...watchedCustomPatches};
+        Dispatcher.dispatch(ACTIONS.GET_FILES_HASH, this.serverMeta);
+        console.log("Server hash list: ", this.serverMeta);
       }
     });
   }
@@ -75,7 +80,7 @@ class UpdateBlock extends React.Component {
       progress,
       absoluteProgress,
     }, () => {
-      if (action === 'finished') {
+      if (action === 'finished') {        
         this.hashList = result;
         Dispatcher.dispatch(ACTIONS.GET_LIST_OF_CHANGED_FILES, { serverList: this.serverMeta, clientList: this.hashList });
         console.log("Changed files list: ", result);
