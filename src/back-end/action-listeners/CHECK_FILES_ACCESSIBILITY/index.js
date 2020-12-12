@@ -19,7 +19,6 @@ const checkFilesAccessibility = async (event, filesToCheck = []) => {
       }
     });
   } catch (e) {
-    console.log('naebnulos');
     event.sender.send(ACTIONS.CHECK_FILES_ACCESSIBILITY, { action: 'finished', result: currentFile });
     return false;
   }

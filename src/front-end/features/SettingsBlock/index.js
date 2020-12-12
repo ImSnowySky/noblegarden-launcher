@@ -7,14 +7,32 @@ import Patch from './components/Patch';
 class SettingsBlock extends React.Component {
   state = {
     isOpened: false,
+    isUpdating: false,
   };
 
   componentDidMount() {
     Dispatcher.on(ACTIONS.TOGGLE_SETTINGS, this.changeOpened);
+    Dispatcher.on(ACTIONS.GET_SERVER_HASHLIST, this.onUpdateStart);
+    Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onUpdateFinished(payload));
+  }
+
+  onUpdateStart = () => {
+    this.setState({
+      isOpened: false,
+      isUpdating: true,
+    });
+  }
+
+  onUpdateFinished = ({ action }) => {
+    action === 'finished' && this.setState({
+      isUpdating: false
+    })
   }
 
   changeOpened = () => {
-    this.setState({ isOpened: !this.state.isOpened });
+    const { isUpdating, isOpened } = this.state;
+    if (isUpdating && !isOpened) return false;
+    this.setState({ isOpened: !isOpened });
   }
 
   render() {
