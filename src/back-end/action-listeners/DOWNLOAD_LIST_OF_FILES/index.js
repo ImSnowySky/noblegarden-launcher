@@ -1,5 +1,6 @@
+const {BrowserWindow} = require("electron");
+const {download} = require("electron-dl");
 const ACTIONS = require('../../../connector/actions');
-const axios = require('axios');
 const fs = require('fs');
 const makePathOK = require('../../makePathOK');
 const chunk = require('lodash/chunk')
@@ -9,54 +10,16 @@ const downloadSingleFile = async ({
   pathOnServer,
   onProgressChanged = () => 0,
 }) => new Promise(async (resolve, reject) => {
-  let downloadedSize = 0;
-  let fullSize = 0;
-  let lockPathToFile = `${pathToFile}.lock`;
+  const fileName = pathToFile.split('\\').reverse()[0];
+  const directory = pathToFile.replace(`\\${fileName}`, '');
 
-  try {
-    const req = await axios({
-      method: 'get',
-      url: pathOnServer,
-      responseType: 'stream',
-    });
-
-    const progressChangedCheckInterval = setInterval(() => {
-      fs.stat(lockPathToFile, (err, stat) => {
-        if (!err && stat.size > downloadedSize) {
-          downloadedSize = stat.size;
-          onProgressChanged(downloadedSize);
-        }
-      })
-    }, 500);
-
-    const writeStream = fs.createWriteStream(lockPathToFile);
-    writeStream.on('pipe', src => {
-      fullSize = parseInt(src.headers['content-length']);
-    });
-    writeStream.on('error', err => {
-      try {
-        writer.close();
-        clearInterval(progressChangedCheckInterval);
-        onProgressChanged(0);
-        reject(err);
-      } catch (e) {
-        return null;
-      }
-    });
-    writeStream.on('close', () => {
-      try {
-        clearInterval(progressChangedCheckInterval);
-        onProgressChanged(fullSize);
-        resolve(true);
-      } catch (e) {
-        return null;
-      }
-    });
-
-    req.data.pipe(writeStream);
-  } catch (e) {
-    console.log(`REFUSED ${pathOnServer}`)
-  }
+  download(BrowserWindow.getFocusedWindow(), pathOnServer, {
+    directory,
+    filename: `${fileName}.lock`,
+    onProgress: ({ transferredBytes }) => onProgressChanged(transferredBytes)
+  })
+    .then(() => resolve())
+    .catch(() => reject())
 });
 
 const deleteOldFile = pathToFile => {
