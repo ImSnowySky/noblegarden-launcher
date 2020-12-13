@@ -1,23 +1,27 @@
-const {download} = require("electron-dl");
 const ACTIONS = require('../../../connector/actions');
 const fs = require('fs');
 const makePathOK = require('../../makePathOK');
 const chunk = require('lodash/chunk')
-const getCurrentWindow = require('../../getCurrentWindow')
+const EasyDl = require("easydl");
 
 const downloadSingleFile = async ({
   pathToFile,
   pathOnServer,
   onProgressChanged = () => 0,
-}) => new Promise((resolve, reject) => {
+}) => new Promise(async (resolve, reject) => {
   const fileName = pathToFile.split('\\').reverse()[0];
   const directory = pathToFile.replace(`\\${fileName}`, '');
 
-  download(getCurrentWindow(), pathOnServer, {
-    directory,
-    filename: `${fileName}.lock`,
-    onProgress: ({ transferredBytes }) => onProgressChanged(transferredBytes),
-  }).then(() => resolve()).catch(e => console.log(e));
+  const download = new EasyDl(pathOnServer, `${directory}/${fileName}.lock`);
+  download.on('progress', ({ total }) => onProgressChanged(total.bytes || 0));
+
+  try {
+    await download.wait();
+    resolve();
+  } catch (e) {
+    console.log(`${fileName} REFUSED`);
+    reject();
+  }
 });
 
 const deleteOldFile = pathToFile => {

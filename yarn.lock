@@ -3022,6 +3022,11 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
+easydl@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/easydl/-/easydl-1.0.1.tgz#1aff54743d00d62dab495772bf4db6707620d10e"
+  integrity sha512-0+Ix7jlcohORYGZviQrfsG54v6HM9Cp0XimaJlPnb6zQ+Co3cu/05q/Tu2HXjiVeMF3fLEHsB8axP7qQsf4KXg==
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
