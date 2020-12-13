@@ -99,7 +99,6 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.changeList = result;
-        //Dispatcher.dispatch(ACTIONS.GET_FILES_SUMMARY_SIZE, this.changeList, this.serverMeta);
         Dispatcher.dispatch(ACTIONS.CHECK_FILES_ACCESSIBILITY, this.changeList);
         console.log("List of download: ", result);
       }

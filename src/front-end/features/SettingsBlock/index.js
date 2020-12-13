@@ -59,6 +59,13 @@ class SettingsBlock extends React.Component {
                 <option value = "4">4</option>
               </select>
             </Elements.BlockRow>
+            <Elements.BlockRow>
+              {
+                settings.downloadThreads === 4 && <Elements.OptDescription>
+                  Повышает скорость скачивания, однако, может приводить к невозможности завершить загрузку до перезапуска
+                </Elements.OptDescription>
+              }
+            </Elements.BlockRow>
           </Elements.Block>
           <Elements.Block>
             <Elements.BlockTitle>Необязательные патчи</Elements.BlockTitle>

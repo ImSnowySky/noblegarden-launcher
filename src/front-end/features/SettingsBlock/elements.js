@@ -124,3 +124,10 @@ export const BlockRow = styled.div`
     }
   }
 `;
+
+export const OptDescription = styled.span`
+  margin-top: 8px;
+  color: ${getColor(COLORS.ERROR, 70)} !important;
+  font-size: 12px !important;
+  line-height: 14px !important;
+`;
