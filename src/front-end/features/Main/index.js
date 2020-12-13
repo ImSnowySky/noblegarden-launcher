@@ -25,7 +25,6 @@ class Main extends React.Component {
   componentDidMount() {
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_VERSION, (_, payload) => this.onLauncherVersionGet(payload));
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_FOLDER_ACCESS, (_, payload) => this.onLauncherFolderAccess(payload));
-    Dispatcher.on(ACTIONS.CHECK_FILES_ACCESSIBILITY, (_, payload) => this.onCheckUpdatingFilesAccessibility(payload));
     Dispatcher.on(ACTIONS.GET_CUSTOM_PATCHES, (_, payload) => this.onGetCustomPatches(payload));
     Dispatcher.on(ACTIONS.GET_STORAGE, (_, payload) => this.onStorageGet(payload));
     Dispatcher.dispatch(ACTIONS.CHECK_LAUNCHER_VERSION);

@@ -1,14 +1,14 @@
 const ACTIONS = require('../../../connector/actions');
-const fs = require('fs');
 const makePathOK = require('../../makePathOK');
 const chunk = require('lodash/chunk')
 const EasyDl = require("easydl");
+const sudo = require('sudo-prompt');
 
 const downloadSingleFile = async ({
   pathToFile,
   pathOnServer,
   onProgressChanged = () => 0,
-}) => new Promise(async (resolve, reject) => {
+}) => new Promise(async resolve => {
   const fileName = pathToFile.split('\\').reverse()[0];
   const directory = pathToFile.replace(`\\${fileName}`, '');
 
@@ -20,28 +20,8 @@ const downloadSingleFile = async ({
     resolve();
   } catch (e) {
     console.log(`${fileName} REFUSED`);
-    reject();
   }
 });
-
-const deleteOldFile = pathToFile => {
-  if (fs.existsSync(pathToFile)) {
-    try {
-      fs.unlinkSync(pathToFile);
-    } catch(e) {
-      console.log('Delete old file crash');
-    };
-  }
-}
-
-const makeNewFileNameCorrect = pathToFile => {
-  try {
-    fs.renameSync(`${pathToFile}.lock`, pathToFile);
-  } catch(e) {
-    console.log('Make new file name correct crash');
-    console.log(e);
-  };
-}
 
 const fakeDownload = name => new Promise(res => {
   setTimeout(() => {
@@ -52,6 +32,8 @@ const fakeDownload = name => new Promise(res => {
 
 const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownload, downloadThreads) => {
   event.sender.send(ACTIONS.DOWNLOAD_LIST_OF_FILES, { action: 'started' });
+  let pathForUpdateCMD = [];
+
   if (listOfFiles.length > 0) {
     const chunkedList = chunk(listOfFiles, downloadThreads);
     const downloadedSizeMap = new Map();
@@ -63,6 +45,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
       await Promise.all(
         currentChunk.map(async fileName => {
           const pathToFile = makePathOK(fileName);
+          pathForUpdateCMD.push(pathToFile);
           //await fakeDownload(pathToFile);
           await downloadSingleFile({
             pathToFile,
@@ -81,22 +64,25 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
               });
             },
           });
-          deleteOldFile(pathToFile);
-          makeNewFileNameCorrect(pathToFile);
         })
       );
       console.log('resolved');
     }
     console.log('all resolved');
   }
-  event.sender.send(
-    ACTIONS.DOWNLOAD_LIST_OF_FILES,
-    {
-      action: 'finished',
-      progress: 100,
-    }
-  );
 
+  const cmdForUpdate = pathForUpdateCMD.map(path => `del ${path} && rename ${path}.lock ${path.split('\\').reverse()[0]}`).join(' && ');
+  sudo.exec(cmdForUpdate, { name: 'Noblegarden Launcher ' }, err => {
+    if (err) throw err;
+
+    event.sender.send(
+      ACTIONS.DOWNLOAD_LIST_OF_FILES,
+      {
+        action: 'finished',
+        progress: 100,
+      }
+    );
+  });
   return null;
 }
 

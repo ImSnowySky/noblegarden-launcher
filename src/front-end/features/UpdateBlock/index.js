@@ -22,11 +22,6 @@ const TEXT_FOR_ACTION_STEPS = {
     ongoing: 'Ищем файлы для обновления',
     finished: null,
   },
-  CHECK_FILES_ACCESSIBILITY: {
-    started: 'Проверяем доступность файлов',
-    ongoing: 'Проверяем доступность файлов',
-    finished: null,
-  },
   GET_FILES_SUMMARY_SIZE: {
     started: 'Считаем размер файлов для загрузки',
     ongoing: 'Считаем размер файлов для загрузки',
@@ -99,22 +94,10 @@ class UpdateBlock extends React.Component {
     }, () => {
       if (action === 'finished') {
         this.changeList = result;
-        Dispatcher.dispatch(ACTIONS.CHECK_FILES_ACCESSIBILITY, this.changeList);
+        Dispatcher.dispatch(ACTIONS.GET_FILES_SUMMARY_SIZE, this.changeList, this.serverMeta);
         console.log("List of download: ", result);
       }
     });
-
-  onCheckAccessibility = ({ action, result = false }) =>
-    this.setState({
-      actionName: TEXT_FOR_ACTION_STEPS.CHECK_FILES_ACCESSIBILITY[action || 'finished'],
-    }, () => {
-      if (action === 'finished' && result === false) {
-        Dispatcher.dispatch(ACTIONS.GET_FILES_SUMMARY_SIZE, this.changeList, this.serverMeta);
-        console.log("All files accessible");
-      } else {
-        console.log(`File ${result} is exists and not accessible`);
-      }
-    })
 
   onFileSizeCalc = ({ action, progress, absoluteProgress = null, result = null }) =>
     this.setState({
@@ -150,7 +133,6 @@ class UpdateBlock extends React.Component {
     Dispatcher.on(ACTIONS.GET_SERVER_HASHLIST, (_, payload) => this.onGetServerHashlist(payload));
     Dispatcher.on(ACTIONS.GET_FILES_HASH, (_, payload) => this.onGetFilesHash(payload));
     Dispatcher.on(ACTIONS.GET_LIST_OF_CHANGED_FILES, (_, payload) => this.onFileListChangeFormation(payload));
-    Dispatcher.on(ACTIONS.CHECK_FILES_ACCESSIBILITY, (_, payload) => this.onCheckAccessibility(payload));
     Dispatcher.on(ACTIONS.GET_FILES_SUMMARY_SIZE, (_, payload) => this.onFileSizeCalc(payload));
     Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onFileDownload(payload));
   }

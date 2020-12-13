@@ -56,12 +56,12 @@ class SettingsBlock extends React.Component {
               <select name = "download-threads" onChange={e => changeDownloadThreads(+e.target.value)} value={settings.downloadThreads}>
                 <option value = "1">1</option>
                 <option value = "2">2</option>
-                <option value = "4">4</option>
+                <option value = "3">3</option>
               </select>
             </Elements.BlockRow>
             <Elements.BlockRow>
               {
-                settings.downloadThreads === 4 && <Elements.OptDescription>
+                settings.downloadThreads === 3 && <Elements.OptDescription>
                   Повышает скорость скачивания, однако, может приводить к невозможности завершить загрузку до перезапуска
                 </Elements.OptDescription>
               }
