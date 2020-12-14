@@ -85,7 +85,21 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
   }).filter(cmd => cmd !== '').join(' && ');
 
   sudo.exec(cmdForUpdate, { name: 'Noblegarden Launcher ' }, err => {
-    if (err) throw err;
+    if (err) {
+      try {
+        pathForUpdateCMD.forEach(path => {
+          if (fs.existsSync(path)) {
+            fs.unlinkSync(path);
+          }
+
+          if (!fs.existsSync(path)) {
+            fs.renameSync(`${path}.lock`, path);
+          }
+        })
+      } catch (e) {
+        throw e;
+      }
+    }
 
     event.sender.send(
       ACTIONS.DOWNLOAD_LIST_OF_FILES,

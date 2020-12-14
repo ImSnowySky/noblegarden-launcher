@@ -15,6 +15,11 @@ const removeAllTrashedFiles = (dir) => {
 
 const getCurrentWindow = () => {
   if (!win) {
+    try {
+      removeAllTrashedFiles(makePathOK('Data/ruRU'));
+      removeAllTrashedFiles(makePathOK('Data'));
+    } catch (e) {};
+
     win = new BrowserWindow({
       width: 900,
       height: 600,
@@ -37,6 +42,7 @@ const getCurrentWindow = () => {
     win.on('closed', function () {
       try {
         removeAllTrashedFiles(makePathOK('Data/ruRU'));
+        removeAllTrashedFiles(makePathOK('Data'));
       } catch (e) {};
 
       if (process.platform !== 'darwin') app.quit();

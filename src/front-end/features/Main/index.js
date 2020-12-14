@@ -141,7 +141,7 @@ class Main extends React.Component {
                       </>
                     : <ErrorBlock errorType = {errorType} msg = {isAccessGranted || notAccessibleFiles}/>
                 }
-                <Elements.Version>v1.2.0</Elements.Version>
+                <Elements.Version>v1.2.1</Elements.Version>
               </>
         }
       </Elements.Container>
