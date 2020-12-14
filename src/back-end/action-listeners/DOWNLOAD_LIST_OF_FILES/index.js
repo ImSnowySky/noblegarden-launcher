@@ -3,16 +3,22 @@ const makePathOK = require('../../makePathOK');
 const chunk = require('lodash/chunk')
 const EasyDl = require("easydl");
 const sudo = require('sudo-prompt');
+const fs = require('fs');
 
 const downloadSingleFile = async ({
   pathToFile,
   pathOnServer,
+  connectionsLimit = 1,
   onProgressChanged = () => 0,
 }) => new Promise(async resolve => {
   const fileName = pathToFile.split('\\').reverse()[0];
   const directory = pathToFile.replace(`\\${fileName}`, '');
 
-  const download = new EasyDl(pathOnServer, `${directory}/${fileName}.lock`);
+  const download = new EasyDl(pathOnServer, `${directory}/${fileName}.lock`, {
+    connections: connectionsLimit,
+    existBehavior: 'overwrite',
+  });
+
   download.on('progress', ({ total }) => onProgressChanged(total.bytes || 0));
 
   try {
@@ -50,6 +56,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
           await downloadSingleFile({
             pathToFile,
             pathOnServer: serverMeta[fileName].path,
+            connectionsLimit: downloadThreads,
             onProgressChanged: currentFileSize => {
               let summaryDownloadedSize = 0;
               downloadedSizeMap.set(fileName, currentFileSize);
@@ -71,7 +78,12 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
     console.log('all resolved');
   }
 
-  const cmdForUpdate = pathForUpdateCMD.map(path => `del ${path} && rename ${path}.lock ${path.split('\\').reverse()[0]}`).join(' && ');
+  const cmdForUpdate = pathForUpdateCMD.map(path => {
+    const fileName = path.split('\\').reverse()[0];
+    const currentCommand = `IF EXIST ${path}.lock ( IF EXIST ${path} del ${path} ) && IF EXIST ${path}.lock rename ${path}.lock ${fileName}`;  
+    return currentCommand;
+  }).filter(cmd => cmd !== '').join(' && ');
+
   sudo.exec(cmdForUpdate, { name: 'Noblegarden Launcher ' }, err => {
     if (err) throw err;
 
