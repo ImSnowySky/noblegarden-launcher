@@ -80,7 +80,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
 
   const cmdForUpdate = pathForUpdateCMD.map(path => {
     const fileName = path.split('\\').reverse()[0];
-    const currentCommand = `IF EXIST ${path}.lock ( IF EXIST ${path} del ${path} ) && IF EXIST ${path}.lock rename ${path}.lock ${fileName}`;  
+    const currentCommand = `IF EXIST "${path}.lock" ( IF EXIST "${path}" del "${path}" ) && IF EXIST "${path}.lock" rename "${path}.lock" ${fileName}`;  
     return currentCommand;
   }).filter(cmd => cmd !== '').join(' && ');
 
@@ -88,14 +88,9 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
     if (err) {
       try {
         pathForUpdateCMD.forEach(path => {
-          if (fs.existsSync(path)) {
-            fs.unlinkSync(path);
-          }
-
-          if (!fs.existsSync(path)) {
-            fs.renameSync(`${path}.lock`, path);
-          }
-        })
+          fs.existsSync(path) && fs.unlinkSync(path);
+          !fs.existsSync(path) && fs.renameSync(`${path}.lock`, path);
+        });
       } catch (e) {
         throw e;
       }
