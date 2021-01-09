@@ -100,9 +100,6 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
       try {
         pathForUpdateCMD.forEach(path => {
           currentPath = makePathOK(path);
-          if (currentPath.includes('I')) {
-            throw Error();
-          }
           fs.existsSync(path) && fs.unlinkSync(path);
           !fs.existsSync(path) && fs.renameSync(`${path}.lock`, path);
         });
