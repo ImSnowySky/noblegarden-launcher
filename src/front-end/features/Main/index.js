@@ -163,7 +163,7 @@ class Main extends React.Component {
                       </>
                     : <ErrorBlock errorType = {errorType} msg = {isAccessGranted || notAccessibleFiles || canNotRenameFile}/>
                 }
-                <Elements.Version>v1.2.1</Elements.Version>
+                <Elements.Version>v1.3.0-tb</Elements.Version>
               </>
         }
       </Elements.Container>
