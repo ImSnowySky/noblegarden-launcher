@@ -130,7 +130,6 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
   });
 
   pathForUpdateCMD.forEach(path => {
-    console.log(serverMeta);
     try {
       if (!fs.existsSync(makePathOK(path))) return;
 

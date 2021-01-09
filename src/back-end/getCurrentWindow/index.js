@@ -18,9 +18,7 @@ const renameAllDownloadedButNotRenamedFiles = dir => {
   const filesToRename = files.filter(({ name }) => name.match(/\.lock$/));
 
   filesToRename.forEach(({ name }) => {
-    console.log(name);
     const nameWithoutLock = name.replace(/\.lock/g, '');
-    console.log(nameWithoutLock);
     if (fs.existsSync(`${dir}/${nameWithoutLock}`)) {
       fs.unlinkSync(`${dir}/${nameWithoutLock}`)
     };

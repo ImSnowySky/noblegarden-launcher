@@ -1,5 +1,7 @@
 import React from 'react';
 import * as Elements from './elements';
+import Dispatcher from 'connector/dispatcher';
+import ACTIONS from 'connector/actions';
 
 const errorByType = (type, msg) => {
   const errorTypes = {
@@ -33,7 +35,10 @@ const errorByType = (type, msg) => {
       <br /><br />
       <span style = {{ color: 'darkred' }}>{msg}</span>
       <br /><br />
-      <a href = "https://noblegarden.net/article/27889" style = {{ fontSize: 16, lineHeight: 1.25 }}>Как исправить?</a>
+      <span
+        onClick = {() => Dispatcher.dispatch(ACTIONS.OPEN_LINK, "https://noblegarden.net/article/27889")}
+        style = {{ color: 'blue', textDecoration: 'underline', cursor: 'pointer', fontSize: 16, lineHeight: 1.25 }}
+      >Как исправить?</span>
     </p>,
   };
 
