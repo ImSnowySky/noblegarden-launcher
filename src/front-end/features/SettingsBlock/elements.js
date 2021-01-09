@@ -131,3 +131,23 @@ export const OptDescription = styled.span`
   font-size: 12px !important;
   line-height: 14px !important;
 `;
+
+export const ResetButton = styled.div`
+  width: 100%;
+  border-radius: 4px;
+  background-color: ${getColor(COLORS.MAIN, 15)};
+  color: ${getColor(COLORS.BLACK, 70)};
+  font-family: 'Rubik', sans-serif;
+  height: 36px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 125ms ease-in-out, color 125ms ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${getColor(COLORS.ERROR, 60)};
+    color: #fff;
+  }
+`;

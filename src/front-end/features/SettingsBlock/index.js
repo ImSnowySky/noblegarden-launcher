@@ -36,7 +36,7 @@ class SettingsBlock extends React.Component {
   }
 
   render() {
-    const { customPatches = [], settings = {}, watchPatch, unwatchPatch, changeDownloadThreads } = this.props;
+    const { customPatches = [], settings = {}, watchPatch, unwatchPatch, changeDownloadThreads, resetCache } = this.props;
     const { isOpened = false } = this.state;
   
     const patches = Object.keys(customPatches).map(patchName => ({
@@ -76,6 +76,10 @@ class SettingsBlock extends React.Component {
                   unwatchPatch = {unwatchPatch}
                 />
             )}
+          </Elements.Block>
+          <Elements.Block>
+            <Elements.BlockTitle>Сохраненные данные</Elements.BlockTitle>
+            <Elements.ResetButton onClick={() => resetCache()}>Сброс кэша</Elements.ResetButton>
           </Elements.Block>
         </Elements.Content>
       </Elements.Container>

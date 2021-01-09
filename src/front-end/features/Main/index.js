@@ -65,6 +65,20 @@ class Main extends React.Component {
     });
   }
 
+  resetCache = () => {
+    Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'downloadThreads', value: 1 });
+    Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'watchedCustomPatches', value: [] });
+    Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'rightModifiedDates', value: null });
+
+    this.setState({
+      settings: {
+        ...this.state.settings,
+        downloadThreads: 1,
+        watchedCustomPatches: [],
+      }
+    });
+  }
+
   watchPatch = patchName => {
     const watchedCustomPatches = [...new Set([...this.state.settings.watchedCustomPatches, patchName])];
     Dispatcher.dispatch(ACTIONS.SAVE_TO_STORAGE, { key: 'watchedCustomPatches', value: watchedCustomPatches });
@@ -144,6 +158,7 @@ class Main extends React.Component {
                           watchPatch = {this.watchPatch}
                           unwatchPatch = {this.unwatchPatch}
                           changeDownloadThreads = {this.changeDownloadThreads}
+                          resetCache = {this.resetCache}
                         />
                       </>
                     : <ErrorBlock errorType = {errorType} msg = {isAccessGranted || notAccessibleFiles || canNotRenameFile}/>

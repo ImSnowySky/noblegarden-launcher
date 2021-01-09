@@ -7,7 +7,7 @@ const Store = require('electron-store');
 const fs = require('fs');
 
 const storage = new Store();
-const rightModifiedDates = storage.rightModifiedDates ? { ...storage.rightModifiedDates } : {};
+const rightModifiedDates = storage.store.rightModifiedDates ? { ...storage.store.rightModifiedDates } : {};
 
 const downloadSingleFile = async ({
   pathToFile,
@@ -48,7 +48,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
       await Promise.all(
         currentChunk.map(async fileName => {
           const pathToFile = makePathOK(fileName);
-          pathForUpdateCMD.push(pathToFile);
+          pathForUpdateCMD.push(fileName);
           await downloadSingleFile({
             pathToFile,
             pathOnServer: serverMeta[fileName].path,
@@ -87,6 +87,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
   }
 
   const cmdForUpdate = pathForUpdateCMD.map(path => {
+    path = makePathOK(path);
     const fileName = path.split('\\').reverse()[0];
     const currentCommand = `IF EXIST "${path}.lock" ( IF EXIST "${path}" del "${path}" ) && IF EXIST "${path}.lock" rename "${path}.lock" ${fileName}`;  
     return currentCommand;
@@ -98,7 +99,7 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
 
       try {
         pathForUpdateCMD.forEach(path => {
-          currentPath = path;
+          currentPath = makePathOK(path);
           if (currentPath.includes('I')) {
             throw Error();
           }
@@ -129,8 +130,20 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
   });
 
   pathForUpdateCMD.forEach(path => {
-    console.log(path);
+    console.log(serverMeta);
+    try {
+      if (!fs.existsSync(makePathOK(path))) return;
+
+      const { mtime: modifiedTime, size } = fs.statSync(makePathOK(path));
+      rightModifiedDates[path] = {
+        time: modifiedTime,
+        hash: serverMeta[path]['crc32-hash'],
+        size: size,
+      }
+    } catch (e) {}
   })
+
+  storage.set('rightModifiedDates', rightModifiedDates);
   return null;
 }
 
