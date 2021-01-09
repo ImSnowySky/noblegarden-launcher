@@ -9,6 +9,7 @@ const getFileSummarySize = async (event, fileList, serverMeta) => {
   for (const index in fileList) {
     const fileName = fileList[index];
     const remotePath = serverMeta[fileName].path;
+
     try {
       const res = await axios.head(remotePath);
       summarySize += +res.headers['content-length'];
@@ -26,7 +27,8 @@ const getFileSummarySize = async (event, fileList, serverMeta) => {
         }
       );
     } catch (e) {
-      console.error(`Can not get filesize of ${fileName}`);        
+      console.log(e);
+      console.error(`Can not get filesize of ${fileName}`);
     }
   }
 

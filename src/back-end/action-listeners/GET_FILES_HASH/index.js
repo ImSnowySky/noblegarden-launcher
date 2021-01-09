@@ -1,7 +1,29 @@
 const fs = require('fs');
+const Store = require('electron-store');
 const ACTIONS = require('../../../connector/actions');
 const makePathOK = require('../../makePathOK');
 const { CRC32Stream } = require('crc32-stream');
+
+const storage = new Store();
+
+const getFileCachedStat = pathToFile => {
+  if (!storage.store || !storage.store.rightModifiedDates) return false;
+
+  if (!storage.store.rightModifiedDates[pathToFile]) return false;
+  return storage.store.rightModifiedDates[pathToFile];
+}
+
+const isFileNotChangedYet = (pathToFile) => {
+  const cachedFileInfo = getFileCachedStat(pathToFile);
+  if (!cachedFileInfo) return false;
+  if (!cachedFileInfo.time || !cachedFileInfo.hash || !cachedFileInfo.size) return false;
+
+  const actualFileInfo = fs.statSync(pathToFile);
+  let { mtime: modifiedTime, size } = actualFileInfo;
+  modifiedTime = new Date(modifiedTime).toISOString();
+
+  return modifiedTime === cachedFileInfo.time && cachedFileInfo.size === size;
+}
 
 const getHashAsync = ({
   pathToFile,
@@ -14,6 +36,14 @@ const getHashAsync = ({
     resolve(null);
     return;
   }
+
+  if (isFileNotChangedYet(pathToFile)) {
+    const cachedInfo = getFileCachedStat(pathToFile);
+    onFileSizeKnown(cachedInfo.size);
+    resolve(cachedInfo.hash);
+    return;
+  }
+
   const fileSize = fs.statSync(pathToFile).size;
 
   const progressChangedCheckInterval = setInterval(() => {
@@ -55,6 +85,11 @@ const getCurrentHashDictionary = async (event, serverHashList) => {
   let summaryFileSize = 0;
   const readedSizeMap = new Map();
   currentHashDictionary = { };
+
+  if (!storage.store.rightModifiedDates) {
+    storage.set('rightModifiedDates', {});
+  }
+
   await Promise.all(
     fileList.map(async file => {
       const hash = await getHashAsync({

@@ -6,11 +6,27 @@ let win = null;
 
 const removeAllTrashedFiles = (dir) => {
   const files = fs.readdirSync(dir, ({ withFileTypes: true }));
-  const filesToDelete = files.filter(({ name }) => name.match(/\.lock.*/));
+  const filesToDelete = files.filter(({ name }) => name.match(/\.lock\..*/));
 
   filesToDelete.forEach(({ name }) => 
     fs.unlinkSync(`${dir}/${name}`)
   );
+}
+
+const renameAllDownloadedButNotRenamedFiles = dir => {
+  const files = fs.readdirSync(dir, ({ withFileTypes: true }));
+  const filesToRename = files.filter(({ name }) => name.match(/\.lock$/));
+
+  filesToRename.forEach(({ name }) => {
+    console.log(name);
+    const nameWithoutLock = name.replace(/\.lock/g, '');
+    console.log(nameWithoutLock);
+    if (fs.existsSync(`${dir}/${nameWithoutLock}`)) {
+      fs.unlinkSync(`${dir}/${nameWithoutLock}`)
+    };
+
+    fs.renameSync(`${dir}/${name}`, `${dir}/${nameWithoutLock}`);
+  });
 }
 
 const getCurrentWindow = () => {
@@ -18,6 +34,8 @@ const getCurrentWindow = () => {
     try {
       removeAllTrashedFiles(makePathOK('Data/ruRU'));
       removeAllTrashedFiles(makePathOK('Data'));
+      renameAllDownloadedButNotRenamedFiles(makePathOK('Data/ruRU'));
+      renameAllDownloadedButNotRenamedFiles(makePathOK('Data'));
     } catch (e) {};
 
     win = new BrowserWindow({
@@ -43,6 +61,8 @@ const getCurrentWindow = () => {
       try {
         removeAllTrashedFiles(makePathOK('Data/ruRU'));
         removeAllTrashedFiles(makePathOK('Data'));
+        renameAllDownloadedButNotRenamedFiles(makePathOK('Data/ruRU'));
+        renameAllDownloadedButNotRenamedFiles(makePathOK('Data'));
       } catch (e) {};
 
       if (process.platform !== 'darwin') app.quit();

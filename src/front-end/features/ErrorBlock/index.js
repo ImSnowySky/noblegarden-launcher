@@ -27,7 +27,14 @@ const errorByType = (type, msg) => {
       <span style = {{ color: 'darkred' }}>{msg}</span>
       <br /><br />
       <span style = {{ fontSize: 13, lineHeight: 1.25 }}>Запустите лаунчер от имени администратора, закройте все иные программы, которые используют этот файл, если они есть</span>
-    </p>
+    </p>,
+    'can-not-rename-file': <p style = {{ textAlign: 'center' }}>
+      Не удалось переименовать файл
+      <br /><br />
+      <span style = {{ color: 'darkred' }}>{msg}</span>
+      <br /><br />
+      <a href = "https://noblegarden.net/article/27889" style = {{ fontSize: 16, lineHeight: 1.25 }}>Как исправить?</a>
+    </p>,
   };
 
   return errorTypes[type] || errorTypes.unknown;

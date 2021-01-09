@@ -15,6 +15,7 @@ class Main extends React.Component {
     isVersionOK: false,
     isAccessGranted: false,
     notAccessibleFiles: false,
+    canNotRenameFile: false,
     customPatches: [],
     settings: {
       downloadThreads: 1,
@@ -25,6 +26,7 @@ class Main extends React.Component {
   componentDidMount() {
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_VERSION, (_, payload) => this.onLauncherVersionGet(payload));
     Dispatcher.on(ACTIONS.CHECK_LAUNCHER_FOLDER_ACCESS, (_, payload) => this.onLauncherFolderAccess(payload));
+    Dispatcher.on(ACTIONS.DOWNLOAD_LIST_OF_FILES, (_, payload) => this.onDownloadListOfFiles(payload));
     Dispatcher.on(ACTIONS.GET_CUSTOM_PATCHES, (_, payload) => this.onGetCustomPatches(payload));
     Dispatcher.on(ACTIONS.GET_STORAGE, (_, payload) => this.onStorageGet(payload));
     Dispatcher.dispatch(ACTIONS.CHECK_LAUNCHER_VERSION);
@@ -34,6 +36,10 @@ class Main extends React.Component {
 
   onGetCustomPatches = ({ action, result = [] }) => {
     action === 'finished' && this.setState({ customPatches: result });
+  }
+
+  onDownloadListOfFiles = ({ action, badFile = false }) => {
+    action === 'error' && this.setState({ canNotRenameFile: badFile });
   }
 
   onStorageGet = ({ result }) => {
@@ -105,17 +111,18 @@ class Main extends React.Component {
   };
 
   errorType = () => {
-    const { isVersionOK = false, isAccessGranted = false, notAccessibleFiles = false } = this.state;    
+    const { isVersionOK = false, isAccessGranted = false, notAccessibleFiles = false, canNotRenameFile = false } = this.state;    
     if (isVersionOK === 'not-working') return isVersionOK;
     if (!isVersionOK) return 'not-last-version';
     if (isAccessGranted !== null) return 'no-access';
     if (notAccessibleFiles !== false) return 'no-file-access';
+    if (canNotRenameFile !== false) return 'can-not-rename-file';
 
     return null;
   }
 
   render() {
-    const { loading = false, isAccessGranted = null, notAccessibleFiles = false, customPatches, settings } = this.state;
+    const { loading = false, isAccessGranted = null, notAccessibleFiles = false, canNotRenameFile = false, customPatches, settings } = this.state;
     const errorType = this.errorType();
 
     return (
@@ -139,7 +146,7 @@ class Main extends React.Component {
                           changeDownloadThreads = {this.changeDownloadThreads}
                         />
                       </>
-                    : <ErrorBlock errorType = {errorType} msg = {isAccessGranted || notAccessibleFiles}/>
+                    : <ErrorBlock errorType = {errorType} msg = {isAccessGranted || notAccessibleFiles || canNotRenameFile}/>
                 }
                 <Elements.Version>v1.2.1</Elements.Version>
               </>

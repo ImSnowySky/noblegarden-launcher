@@ -3,7 +3,11 @@ const makePathOK = require('../../makePathOK');
 const chunk = require('lodash/chunk')
 const EasyDl = require("easydl");
 const sudo = require('sudo-prompt');
+const Store = require('electron-store');
 const fs = require('fs');
+
+const storage = new Store();
+const rightModifiedDates = storage.rightModifiedDates ? { ...storage.rightModifiedDates } : {};
 
 const downloadSingleFile = async ({
   pathToFile,
@@ -29,13 +33,6 @@ const downloadSingleFile = async ({
   }
 });
 
-const fakeDownload = name => new Promise(res => {
-  setTimeout(() => {
-    console.log(`${name} downloaded`);
-    res();
-  }, 200)
-});
-
 const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownload, downloadThreads) => {
   event.sender.send(ACTIONS.DOWNLOAD_LIST_OF_FILES, { action: 'started' });
   let pathForUpdateCMD = [];
@@ -52,7 +49,6 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
         currentChunk.map(async fileName => {
           const pathToFile = makePathOK(fileName);
           pathForUpdateCMD.push(pathToFile);
-          //await fakeDownload(pathToFile);
           await downloadSingleFile({
             pathToFile,
             pathOnServer: serverMeta[fileName].path,
@@ -78,6 +74,18 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
     console.log('all resolved');
   }
 
+  if (pathForUpdateCMD.length <= 0) {
+    event.sender.send(
+      ACTIONS.DOWNLOAD_LIST_OF_FILES,
+      {
+        action: 'finished',
+        progress: 100,
+      }
+    );
+
+    return null;
+  }
+
   const cmdForUpdate = pathForUpdateCMD.map(path => {
     const fileName = path.split('\\').reverse()[0];
     const currentCommand = `IF EXIST "${path}.lock" ( IF EXIST "${path}" del "${path}" ) && IF EXIST "${path}.lock" rename "${path}.lock" ${fileName}`;  
@@ -86,13 +94,28 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
 
   sudo.exec(cmdForUpdate, { name: 'Noblegarden Launcher ' }, err => {
     if (err) {
+      let currentPath = null;
+
       try {
         pathForUpdateCMD.forEach(path => {
+          currentPath = path;
+          if (currentPath.includes('I')) {
+            throw Error();
+          }
           fs.existsSync(path) && fs.unlinkSync(path);
           !fs.existsSync(path) && fs.renameSync(`${path}.lock`, path);
         });
       } catch (e) {
-        throw e;
+        event.sender.send(
+          ACTIONS.DOWNLOAD_LIST_OF_FILES,
+          {
+            action: 'error',
+            progress: 100,
+            badFile: currentPath,
+          }
+        );
+
+        return null;
       }
     }
 
@@ -104,6 +127,10 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
       }
     );
   });
+
+  pathForUpdateCMD.forEach(path => {
+    console.log(path);
+  })
   return null;
 }
 
