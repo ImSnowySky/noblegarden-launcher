@@ -19,8 +19,10 @@ const downloadSingleFile = async ({
   const directory = pathToFile.replace(`\\${fileName}`, '');
 
   const download = new EasyDl(pathOnServer, `${directory}/${fileName}.lock`, {
-    connections: connectionsLimit,
+    connections: 2 * connectionsLimit,
     existBehavior: 'overwrite',
+    maxRetry: 10,
+    retryBackoff: 5000,
   });
 
   download.on('progress', ({ total }) => onProgressChanged(total.bytes || 0));
