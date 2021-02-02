@@ -12,14 +12,13 @@ const rightModifiedDates = storage.store.rightModifiedDates ? { ...storage.store
 const downloadSingleFile = async ({
   pathToFile,
   pathOnServer,
-  connectionsLimit = 1,
   onProgressChanged = () => 0,
 }) => new Promise(async resolve => {
   const fileName = pathToFile.split('\\').reverse()[0];
   const directory = pathToFile.replace(`\\${fileName}`, '');
 
   const download = new EasyDl(pathOnServer, `${directory}/${fileName}.lock`, {
-    connections: 2 * connectionsLimit,
+    connections: 4,
     existBehavior: 'overwrite',
     maxRetry: 10,
     retryBackoff: 5000,
@@ -54,7 +53,6 @@ const downloadListOfFiles = async (event, listOfFiles, serverMeta, sizeToDownloa
           await downloadSingleFile({
             pathToFile,
             pathOnServer: serverMeta[fileName].path,
-            connectionsLimit: downloadThreads,
             onProgressChanged: currentFileSize => {
               let summaryDownloadedSize = 0;
               downloadedSizeMap.set(fileName, currentFileSize);
